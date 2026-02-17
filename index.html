@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Student Finance Tracker</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <a href="#main" class="skip-link">Skip to main content</a>
+    <!-- HEADER: Title + Navigation -->
+    <header>
+      <h1>💰 Student Finance Tracker</h1>
+      <nav>
+        <ul>
+          <li><a href="#about">About</a></li>
+          <li><a href="#dashboard">Dashboard</a></li>
+          <li><a href="#records">Records</a></li>
+          <li><a href="#add-edit">Add/Edit</a></li>
+          <li><a href="#settings">Settings</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <!-- MAIN CONTENT: All sections live here -->
+    <main id="main">
+
+    <!-- SECTION 1: About / Welcome -->
+      <section id="about" class="section">
+        <h2>About This App</h2>
+        <p>
+          Track your student expenses, categorize spending, and visualize where
+          your money goes.
+        </p>
+
+        <h3>Features</h3>
+        <ul>
+          <li>Add, edit, and delete transactions</li>
+          <li>Sort and search through your spending history</li>
+          <li>View spending statistics and trends</li>
+          <li>Set budget caps and get alerts</li>
+        </ul>
+
+        <h3>Contact</h3>
+        <p>
+          GitHub:
+          <a href="https://github.com/raphaelmstudios" target="_blank"
+            >raphaelmstudios</a
+          >
+        </p>
+        <p>Email: r.musau@alustudent.com</p>
+      </section>
+
+
+      <!-- SECTION 2: Dashboard / Stats -->
+      <section id="dashboard" class="section">
+        <h2>Dashboard</h2>
+
+        <!-- Stats: 4 cards showing key metrics -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <h3>Total Transactions</h3>
+            <p id="stat-total">0</p>
+          </div>
+          <div class="stat-card">
+            <h3>Total Spending</h3>
+            <p id="stat-spending">$0.00</p>
+          </div>
+          <div class="stat-card">
+            <h3>Top Category</h3>
+            <p id="stat-category">—</p>
+          </div>
+          <div class="stat-card">
+            <h3>Last 7 Days</h3>
+            <p id="stat-week">$0.00</p>
+          </div>
+        </div>
+
+        <!-- Budget Cap: Set spending limit -->
+        <div class="budget-cap">
+          <h3>Monthly Budget Cap</h3>
+          <label for="cap-input">Set Cap ($):</label>
+          <input
+            type="number"
+            id="cap-input"
+            min="0"
+            step="100"
+            placeholder="e.g., 500"
+          />
+          <button id="cap-btn">Set Cap</button>
+          <div id="cap-status" role="status"></div>
+        </div>
+      </section>
+
+    <!-- SECTION 3: Records / Transaction Table -->
+      <section id="records" class="section">
+        <h2>All Transactions</h2>
+
+        <!-- Search Controls: Regex search + case toggle -->
+        <div class="controls">
+          <label for="search-input">Search (Regex):</label>
+          <input type="text" id="search-input" placeholder="e.g., coffee" />
+          <label>
+            <input type="checkbox" id="search-case" /> Case sensitive
+          </label>
+        </div>
+
+        <!-- Table: All transactions displayed here -->
+        <table id="records-table">
+          <thead>
+            <tr>
+              <th>
+                <button class="sort-btn" data-field="date">Date ↕</button>
+              </th>
+              <th>
+                <button class="sort-btn" data-field="description">
+                  Description ↕
+                </button>
+              </th>
+              <th>
+                <button class="sort-btn" data-field="amount">Amount ↕</button>
+              </th>
+              <th>Category</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="records-body">
+            <tr>
+              <td colspan="5">No transactions yet. Add one to get started!</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- SECTION 4: Add/Edit Form -->
+      <section id="add-edit" class="section">
+        <h2 id="form-heading">Add Transaction</h2>
+
+        <form id="transaction-form">
+          <input type="hidden" id="form-id" />
+
+          <!-- Input: Description -->
+          <div class="form-group">
+            <label for="form-description">Description *</label>
+            <input type="text" id="form-description" required />
+            <span class="error" id="error-description" role="alert"></span>
+          </div>
+
+          <!-- Input: Amount -->
+          <div class="form-group">
+            <label for="form-amount">Amount ($) *</label>
+            <input type="text" id="form-amount" required />
+            <span class="error" id="error-amount" role="alert"></span>
+          </div>
+
+          <!-- Input: Category dropdown -->
+          <div class="form-group">
+            <label for="form-category">Category *</label>
+            <select id="form-category" required>
+              <option value="">-- Select --</option>
+              <option value="Food">Food</option>
+              <option value="Books">Books</option>
+              <option value="Transport">Transport</option>
+              <option value="Entertainment">Entertainment</option>
+              <option value="Fees">Fees</option>
+              <option value="Other">Other</option>
+            </select>
+            <span class="error" id="error-category" role="alert"></span>
+          </div>
+
+          <!-- Input: Date (YYYY-MM-DD format) -->
+          <div class="form-group">
+            <label for="form-date">Date *</label>
+            <input
+              type="text"
+              id="form-date"
+              placeholder="YYYY-MM-DD"
+              required
+            />
+            <span class="error" id="error-date" role="alert"></span>
+          </div>
+
+          <!-- Form Actions: Submit or Cancel -->
+          <div class="form-actions">
+            <button type="submit" id="form-submit">Add Transaction</button>
+            <button type="button" id="form-cancel">Cancel</button>
+          </div>
+        </form>
+      </section>
+
+    </main>
+  </body>
+</html>
