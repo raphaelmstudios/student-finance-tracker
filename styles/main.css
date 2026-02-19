@@ -134,10 +134,6 @@ nav a.active {
 
 /*SKIP LINK (Accessibility)*/
 
-/* =====================================
-   SKIP LINK (Accessibility)
-   ===================================== */
-
 .skip-link {
   position: absolute;
   left: -10000px;
@@ -682,3 +678,4 @@ mark {
 .error:not(:empty) {
   animation: slideIn 0.3s ease;
 }
+
