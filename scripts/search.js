@@ -2,9 +2,9 @@
 /*Safely create a regex pattern from user input
  *If the pattern is invalid, returns null instead of crashing*/
 
-export function compileRegex(input, flags = 'i') {
+export function compileRegex(input, flags = "i") {
   // If nothing was typed, return null
-  if (!input || input.trim() === '') {
+  if (!input || input.trim() === "") {
     return null;
   }
 
@@ -13,7 +13,7 @@ export function compileRegex(input, flags = 'i') {
     return new RegExp(input, flags);
   } catch (error) {
     // If the pattern is invalid (e.g., unclosed bracket), return null
-    console.warn('Invalid regex pattern:', input, error);
+    console.warn("Invalid regex pattern:", input, error);
     return null;
   }
 }
@@ -27,20 +27,24 @@ export function highlight(text, regex) {
 
   // Replace all matches with <mark>match</mark>
 
-  const globalRegex = new RegExp(regex.source, regex.flags + 'g');
-  
-  return text.replace(globalRegex, match => `<mark>${match}</mark>`);
+  const globalRegex = new RegExp(regex.source, regex.flags + "g");
+
+  return text.replace(globalRegex, (match) => `<mark>${match}</mark>`);
 }
 
 /*Search through transactions and return matches*/
-export function searchTransactions(transactions, searchInput, caseSensitive = false) {
+export function searchTransactions(
+  transactions,
+  searchInput,
+  caseSensitive = false,
+) {
   // If no search input, return all transactions
-  if (!searchInput || searchInput.trim() === '') {
+  if (!searchInput || searchInput.trim() === "") {
     return transactions;
   }
 
   // Create the regex pattern
-  const flags = caseSensitive ? '' : 'i';
+  const flags = caseSensitive ? "" : "i";
   const regex = compileRegex(searchInput, flags);
 
   // If regex is invalid, return all transactions
@@ -49,7 +53,7 @@ export function searchTransactions(transactions, searchInput, caseSensitive = fa
   }
 
   // Filter transactions that match the pattern in description or category
-  return transactions.filter(transaction => {
+  return transactions.filter((transaction) => {
     const descMatch = regex.test(transaction.description);
     const categoryMatch = regex.test(transaction.category);
     return descMatch || categoryMatch;
