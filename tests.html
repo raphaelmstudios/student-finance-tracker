@@ -4,21 +4,100 @@
     <meta charset="UTF-8" />
     <title>Pesaani Automated Tests</title>
     <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
       body {
-        font-family: Arial;
-        padding: 20px;
+        font-family: "DM Sans", system-ui, sans-serif;
+        background: #faf7f2;
+        color: #2a2a26;
+        padding: 40px 24px;
+        max-width: 720px;
+        margin: 0 auto;
       }
-      .pass {
-        color: green;
+
+      h1 {
+        font-size: 28px;
+        margin-bottom: 8px;
+        color: #0f0f0d;
       }
-      .fail {
-        color: red;
+
+      .subtitle {
+        color: #52524a;
+        font-size: 14px;
+        margin-bottom: 32px;
+      }
+
+      ul {
+        list-style: none;
+        padding: 0;
+      }
+
+      li {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 0;
+        font-size: 14px;
+        border-bottom: 1px solid #f5f0e8;
+      }
+
+      li:last-child {
+        border-bottom: none;
+      }
+
+      li::before {
+        content: "";
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        flex-shrink: 0;
+      }
+
+      li.pass {
+        color: #2d4a3e;
+      }
+      li.pass::before {
+        background: #7ab648;
+      }
+      li.fail {
+        color: #b91c1c;
+      }
+      li.fail::before {
+        background: #b91c1c;
+      }
+
+      .summary {
+        margin-top: 24px;
+        padding: 16px 24px;
+        border-radius: 12px;
+        font-size: 15px;
+        font-weight: 600;
+        text-align: center;
+      }
+
+      .summary.all-pass {
+        background: rgba(45, 74, 62, 0.09);
+        color: #2d4a3e;
+        border: 1px solid rgba(45, 74, 62, 0.2);
+      }
+
+      .summary.has-fail {
+        background: #fef2f2;
+        color: #b91c1c;
+        border: 1px solid rgba(185, 28, 28, 0.2);
       }
     </style>
   </head>
   <body>
     <h1>Pesaani Automated Tests</h1>
+    <p class="subtitle">Regex validation, storage, search, and schema checks</p>
     <ul id="results"></ul>
+    <div id="summary" class="summary" style="display: none"></div>
 
     <script type="module">
       import {
@@ -27,53 +106,134 @@
         validateDate,
         validateCategory,
         validateForm,
+        cleanDescription,
       } from "./scripts/validators.js";
 
-      import { compileRegex } from "./scripts/search.js";
+      import { compileRegex, searchTransactions } from "./scripts/search.js";
       import { save, load, clear } from "./scripts/storage.js";
 
       const results = document.getElementById("results");
+      let totalPass = 0;
+      let totalFail = 0;
 
       function addResult(name, condition) {
         const li = document.createElement("li");
         li.textContent = name;
         li.className = condition ? "pass" : "fail";
         results.appendChild(li);
+        condition ? totalPass++ : totalFail++;
+      }
+
+      function showSummary() {
+        const el = document.getElementById("summary");
+        el.style.display = "block";
+        if (totalFail === 0) {
+          el.className = "summary all-pass";
+          el.textContent = `✓ All ${totalPass} tests passed`;
+        } else {
+          el.className = "summary has-fail";
+          el.textContent = `${totalFail} test${totalFail !== 1 ? "s" : ""} failed — ${totalPass} passed`;
+        }
       }
 
       /*SAFE REGEX TEST*/
-
       addResult(
         "Safe regex compiler handles invalid pattern",
         compileRegex("(") === null,
       );
-
-      /*REGEX VALIDATION TESTS*/
-
       addResult(
-        "Description rejects duplicate words",
-        !validateDescription("coffee coffee").valid,
+        "Valid regex pattern compiles to RegExp",
+        compileRegex("coffee") instanceof RegExp,
+      );
+      addResult(
+        "compileRegex is case-insensitive by default",
+        compileRegex("COFFEE").test("coffee"),
       );
 
+      /*DESCRIPTION VALIDATION*/
+      addResult(
+        "Description accepts valid input",
+        validateDescription("Lunch at canteen").valid,
+      );
+      addResult(
+        "Description rejects empty string",
+        !validateDescription("").valid,
+      );
+      addResult(
+        "Description rejects leading spaces",
+        !validateDescription("  lunch").valid,
+      );
+      addResult(
+        "Description rejects trailing spaces",
+        !validateDescription("lunch  ").valid,
+      );
+      addResult(
+        "Description rejects double spaces between words",
+        !validateDescription("lunch  today").valid,
+      );
+      addResult(
+        "Description rejects duplicate consecutive words",
+        !validateDescription("coffee coffee").valid,
+      );
+      addResult(
+        "cleanDescription trims and collapses spaces",
+        cleanDescription("  lunch   today  ") === "lunch today",
+      );
+
+      /*AMOUNT VALIDATION*/
+      addResult("Amount accepts whole number", validateAmount("5000").valid);
+      addResult(
+        "Amount accepts one decimal place",
+        validateAmount("5000.5").valid,
+      );
       addResult(
         "Amount accepts valid decimal",
         validateAmount("5000.50").valid,
       );
-
+      addResult("Amount rejects empty string", !validateAmount("").valid);
       addResult(
         "Amount rejects negative values",
         !validateAmount("-100").valid,
       );
-
       addResult(
-        "Date rejects invalid calendar date",
+        "Amount rejects three decimal places",
+        !validateAmount("5000.999").valid,
+      );
+      addResult(
+        "Amount rejects non-numeric input",
+        !validateAmount("abc").valid,
+      );
+
+      /*DATE VALIDATION*/
+      addResult("Date accepts valid date", validateDate("2026-02-15").valid);
+      addResult("Date rejects empty string", !validateDate("").valid);
+      addResult(
+        "Date rejects wrong format DD-MM-YYYY",
+        !validateDate("15-02-2026").valid,
+      );
+      addResult(
+        "Date rejects invalid month 13",
+        !validateDate("2026-13-01").valid,
+      );
+      addResult(
+        "Date rejects invalid calendar date Feb 30",
         !validateDate("2026-02-30").valid,
       );
 
+      /*CATEGORY VALIDATION*/
+      addResult("Category accepts single word", validateCategory("Food").valid);
+      addResult(
+        "Category accepts hyphenated word",
+        validateCategory("Non-Fiction").valid,
+      );
+      addResult("Category rejects empty string", !validateCategory("").valid);
       addResult("Category rejects numbers", !validateCategory("Food123").valid);
+      addResult(
+        "Category rejects special characters",
+        !validateCategory("Food!").valid,
+      );
 
       /*FORM VALIDATION*/
-
       addResult(
         "Form validation passes with correct data",
         validateForm({
@@ -83,25 +243,123 @@
           category: "Fees",
         }).valid,
       );
+      addResult(
+        "Form fails when description is empty",
+        !validateForm({
+          description: "",
+          amount: "500",
+          date: "2026-02-10",
+          category: "Fees",
+        }).valid,
+      );
+      addResult(
+        "Form fails when amount is invalid",
+        !validateForm({
+          description: "Library fee",
+          amount: "-50",
+          date: "2026-02-10",
+          category: "Fees",
+        }).valid,
+      );
+      addResult(
+        "Form returns correct error keys on failure",
+        (() => {
+          const r = validateForm({
+            description: "",
+            amount: "",
+            date: "",
+            category: "",
+          });
+          return (
+            !r.valid &&
+            r.errors.description &&
+            r.errors.amount &&
+            r.errors.date &&
+            r.errors.category
+          );
+        })(),
+      );
+
+      /*SEARCH TESTS*/
+      addResult(
+        "searchTransactions matches description",
+        (() => {
+          const txns = [
+            {
+              id: "1",
+              description: "Bourbon Coffee",
+              category: "Food",
+              amount: 5000,
+              date: "2026-02-01",
+            },
+            {
+              id: "2",
+              description: "Moto taxi",
+              category: "Transport",
+              amount: 1000,
+              date: "2026-02-01",
+            },
+          ];
+          return searchTransactions(txns, "coffee").length === 1;
+        })(),
+      );
+      addResult(
+        "searchTransactions matches category",
+        (() => {
+          const txns = [
+            {
+              id: "1",
+              description: "Bus fare",
+              category: "Transport",
+              amount: 2000,
+              date: "2026-02-01",
+            },
+            {
+              id: "2",
+              description: "Lunch",
+              category: "Food",
+              amount: 3000,
+              date: "2026-02-01",
+            },
+          ];
+          return searchTransactions(txns, "transport").length === 1;
+        })(),
+      );
+      addResult(
+        "searchTransactions returns all on empty query",
+        (() => {
+          const txns = [
+            {
+              id: "1",
+              description: "A",
+              category: "Food",
+              amount: 100,
+              date: "2026-02-01",
+            },
+            {
+              id: "2",
+              description: "B",
+              category: "Food",
+              amount: 200,
+              date: "2026-02-01",
+            },
+          ];
+          return searchTransactions(txns, "").length === 2;
+        })(),
+      );
 
       /*LOCAL STORAGE TESTS*/
-
       clear();
-
       save([{ id: "test1", amount: 100 }]);
       const loaded = load();
-
       addResult(
         "localStorage save/load works",
         loaded.length === 1 && loaded[0].id === "test1",
       );
-
       clear();
-
       addResult("localStorage clear works", load().length === 0);
 
       /*JSON SCHEMA VALIDATION*/
-
       function validateRecordSchema(record) {
         return (
           typeof record.id === "string" &&
@@ -117,12 +375,32 @@
       fetch("./seed.json")
         .then((res) => res.json())
         .then((data) => {
-          const allValid = data.every(validateRecordSchema);
-          addResult("Seed JSON schema valid", allValid);
+          addResult(
+            `seed.json contains ${data.length} records`,
+            data.length >= 10,
+          );
+          addResult(
+            "All records have required fields",
+            data.every(validateRecordSchema),
+          );
+          addResult(
+            "All amounts are positive numbers",
+            data.every((r) => typeof r.amount === "number" && r.amount > 0),
+          );
+          addResult(
+            "All dates match YYYY-MM-DD format",
+            data.every((r) =>
+              /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/.test(r.date),
+            ),
+          );
+          showSummary();
         })
         .catch(() => {
           addResult("Seed JSON loaded successfully", false);
+          showSummary();
         });
+
+      setTimeout(showSummary, 100);
     </script>
   </body>
 </html>
