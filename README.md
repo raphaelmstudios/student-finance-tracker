@@ -12,23 +12,6 @@ A responsive, accessible finance tracker built specifically for students. Track 
 
 ---
 
-## Table of Contents
-
-- [About](#about)
-- [Features](#features)
-- [Technology Stack](#technology-stack)
-- [Project Structure](#project-structure)
-- [Regex Validation Catalog](#regex-validation-catalog)
-- [Installation and Usage](#installation-and-usage)
-- [Keyboard Navigation](#keyboard-navigation)
-- [Accessibility Features](#accessibility-features)
-- [Browser Compatibility](#browser-compatibility)
-- [Running Tests](#running-tests)
-- [Assignment Compliance](#assignment-compliance)
-- [License](#license)
-
----
-
 ## About
 
 PESAANI derives its name from the Swahili word _pesa_, meaning "money". The application helps students understand and take control of their finances through clarity, simplicity, and accessibility.
