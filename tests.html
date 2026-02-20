@@ -27,10 +27,10 @@
         validateDate,
         validateCategory,
         validateForm,
-        compileRegex,
-      } from "./validators.js";
+      } from "./scripts/validators.js";
 
-      import { save, load, clear } from "./storage.js";
+      import { compileRegex } from "./scripts/search.js";
+      import { save, load, clear } from "./scripts/storage.js";
 
       const results = document.getElementById("results");
 
