@@ -1,279 +1,384 @@
 # PESAANI — Student Finance Tracker
 
-> A lightweight, accessible personal finance tracker built for students, using vanilla HTML, CSS, and JavaScript.
+**Your Money • Your Clarity**
 
-**Author:** Raphael Mumo
-**GitHub:** [raphaelmstudios](https://github.com/raphaelmstudios)
+A responsive, accessible finance tracker built specifically for students. Track daily expenses, understand spending patterns, and build healthy financial habits without complexity or overwhelm.
+
+**Live Demo:** https://raphaelmstudios.github.io/student-finance-tracker
+
+**Developer:** Raphael Musau  
+**GitHub:** @raphaelmstudios  
 **Email:** r.musau@alustudent.com
-**Live Demo:** [https://raphaelmstudios.github.io/student-finance-tracker/](https://raphaelmstudios.github.io/student-finance-tracker/)
 
 ---
 
-## Table of Contents
+## About
 
-- [Overview](#overview)
-- [Features](#features)
-- [Project Structure](#project-structure)
-- [How It Works](#how-it-works)
-- [Data Model](#data-model)
-- [Validation Rules & Regex Catalog](#validation-rules--regex-catalog)
-- [Keyboard Navigation Map](#keyboard-navigation-map)
-- [Accessibility](#accessibility)
-- [Testing](#testing)
-- [Getting Started](#getting-started)
-- [Limitations](#limitations)
+PESAANI derives its name from the Swahili word _pesa_, meaning "money". The application helps students understand and take control of their finances through clarity, simplicity, and accessibility.
 
----
+### Why PESAANI Exists
 
-## Overview
+Many students manage money informally through memory, notes, or guesswork. This often leads to poor financial awareness and difficulty budgeting effectively. PESAANI was created to address this challenge by providing:
 
-**PESAANI** (Swahili for "in the wallet") is a browser-based student finance tracker that helps users log, search, sort, and analyse their daily spending. It stores data locally in the browser using `localStorage` — no server, no signup, no dependencies.
+**Clarity** — Students can see exactly where their money goes through categorized transactions and visual statistics.
 
-The project is structured around ES Modules with a clear separation of concerns across five focused JavaScript files.
+**Structure** — Expenses are organized by category and date, making it easy to identify spending patterns.
+
+**Visibility** — Dashboard statistics and a 7-day spending chart provide at-a-glance insights into financial habits.
+
+**Simplicity** — The interface avoids complex finance jargon and overwhelming features, focusing instead on core functionality that students actually need.
+
+The application is designed specifically for university students and young adults who want to build financial awareness early, without using complex or professional finance tools that may be unsuitable for everyday student use.
 
 ---
 
 ## Features
 
-- **Add, edit, and delete** expense transactions
-- **Search** transactions using regex patterns with optional case sensitivity
-- **Sort** records by date, description, or amount
-- **Dashboard** with live stats: total transactions, total spending, top category, and last 7 days
-- **7-day bar chart** with hover tooltips showing daily spending
-- **Budget cap** — set a monthly spending limit with visual alerts when exceeded
-- **Currency conversion** — configurable RWF → USD and GBP exchange rates
-- **Export** transactions as JSON
-- **Import** transactions from a JSON file
-- **Responsive design** — mobile drawer navigation, tablet and desktop layouts
-- **Accessible** — ARIA roles, live regions, skip links, keyboard navigation, screen reader support
-- All data stored in **localStorage** — works offline, no backend required
+### Core Functionality
+
+The application provides a complete set of features for managing personal finances:
+
+**Transaction Management** — Users can add, edit, and delete transactions with descriptions, amounts in Rwandan Francs, categories, and dates. Each transaction is validated using regex patterns to ensure data integrity.
+
+**Advanced Search** — A powerful regex-based search engine allows users to find transactions using pattern matching. Searches can be case-sensitive or case-insensitive, and matching text is highlighted in yellow for easy identification.
+
+**Multi-Column Sorting** — Transactions can be sorted by date, amount, or description in ascending or descending order. Visual arrows indicate the current sort state.
+
+**Dashboard Statistics** — The dashboard displays four key metrics: total number of transactions, total spending, top spending category, and spending in the last 7 days. These update automatically as transactions are added or removed.
+
+**7-Day Spending Chart** — An animated bar chart visualizes daily spending over the past week. Hovering over bars reveals exact amounts, and today's bar is highlighted in a distinct color.
+
+**Budget Cap System** — Users can set a monthly spending limit and receive real-time status updates. When under budget, a green message shows remaining funds. When over budget, a red pulsing alert displays the overage amount.
+
+**Data Portability** — Transactions can be exported as JSON files for backup purposes. Previously exported data can be imported back, replacing the current dataset. This enables data migration between devices or restoration after data loss.
+
+**Persistent Storage** — All transactions, settings, and budget caps are saved to browser localStorage, ensuring data survives page refreshes and browser restarts.
 
 ---
 
 ## Project Structure
 
 ```
-/
-├── index.html              # Main app shell — all 5 sections
-├── tests.html              # Browser-based automated test suite
-├── seed.json               # 20 sample transactions for testing
-├── README.md
-├── .gitignore
+student-finance-tracker/
+├── index.html              # Main application interface
+├── tests.html              # Automated test suite
+├── seed.json               # Sample transaction data (12 records)
+├── README.md               # This documentation file
 │
-├── scripts/
-│   ├── ui.js               # Main controller — DOM, events, rendering
-│   ├── validators.js       # Regex-based form validation
-│   ├── search.js           # Regex search and highlight logic
+├── assets/
+│   └── Untitled design/    # Logo and branding assets
+│       ├── 4.png           # Header logo (SVG recommended)
+│       └── 5.png           # Favicon
+│
+├── scripts/                # JavaScript modules (ES6)
+│   ├── ui.js               # Main controller (navigation, rendering, events)
 │   ├── state.js            # In-memory state management
-│   └── storage.js          # localStorage read/write helpers
+│   ├── storage.js          # localStorage abstraction layer
+│   ├── validators.js       # Regex validation functions
+│   └── search.js           # Regex compilation and highlighting
 │
-├── styles/
-│   └── main.css            # All styles — layout, components, responsive
-│
-└── assets/
-    └── images/
-        ├── 4.png           # Header logo
-        ├── 5.png           # Favicon
-        └── hero.png        # About page hero image
+└── styles/
+    └── main.css            # Complete design system (approximately 1000 lines)
 ```
 
-### Module Responsibilities
+### Module Architecture
 
-| File            | Responsibility                                                                                                                              |
-| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| `ui.js`         | Initialises the app, handles all DOM interactions, renders the table and chart, manages navigation and form state                           |
-| `validators.js` | Exports `validateDescription`, `validateAmount`, `validateDate`, `validateCategory`, `validateForm`, `cleanDescription`, and `compileRegex` |
-| `search.js`     | Exports `compileRegex`, `highlight`, and `searchTransactions` for live regex search with HTML highlighting                                  |
-| `state.js`      | Holds transactions, exchange rates, and budget cap in memory; syncs to `storage.js` on every change                                         |
-| `storage.js`    | Wraps `localStorage` with safe `save`, `load`, `clear`, `saveSettings`, `loadSettings`, and `clearAll` functions                            |
+The application follows a modular architecture with clear separation of concerns. Each module has a single responsibility and exports only the functions necessary for other modules to consume.
 
----
+**storage.js** — Provides an abstraction layer over the localStorage API. This module handles all serialization and deserialization of JSON data. Functions include save (store transactions array), load (retrieve transactions array), clear (remove transactions), clearAll (remove transactions and settings), loadSettings (retrieve settings object), and saveSettings (store settings object). Error handling is implemented for quota exceeded errors and JSON parse failures.
 
-## How It Works
+**state.js** — Manages in-memory application state. This module maintains the current transactions array, exchange rates, and budget cap. It provides functions to initialize state from localStorage, retrieve transactions, add new transactions, update existing transactions, delete transactions, and manage settings. The module ensures data consistency by always saving to storage after state mutations.
 
-The app is a single-page application with five sections controlled by JavaScript — only one section is visible at a time:
+**validators.js** — Encapsulates all validation logic using regex patterns. Each validation function takes a value and returns an object with valid (boolean) and error (string) properties. Functions include validateDescription (no leading/trailing spaces, no duplicate words), validateAmount (positive numbers with max 2 decimals), validateDate (YYYY-MM-DD format with calendar validation), validateCategory (letters, spaces, hyphens only), validateForm (validates all fields at once), and cleanDescription (removes extra whitespace).
 
-| Section          | Description                                                  |
-| ---------------- | ------------------------------------------------------------ |
-| **About**        | Project info, hero image, and developer contact              |
-| **Dashboard**    | Stat cards, 7-day spending chart, and budget cap controls    |
-| **Records**      | Searchable, sortable transaction table with edit and delete  |
-| **Transactions** | Add or edit a transaction via a validated form               |
-| **Settings**     | Configure exchange rates, export/import JSON, clear all data |
+**search.js** — Handles regex compilation and text highlighting. The compileRegex function safely creates RegExp objects from user input, catching syntax errors and returning null for invalid patterns. The highlight function wraps matching text in mark elements for visual highlighting, with HTML escaping to prevent XSS attacks. The searchTransactions function filters an array of transactions based on a regex pattern applied to descriptions and categories.
 
-Navigation is handled entirely in JavaScript via `showSection()`. On mobile, a hamburger drawer slides in from the right with a backdrop overlay.
-
-Data flows in one direction: the form writes to `state.js` → `state.js` persists via `storage.js` → `ui.js` reads state to re-render the table, chart, and stats.
+**ui.js** — Serves as the main controller and entry point. This module contains no exports and instead coordinates all other modules. It handles DOM manipulation, event listeners, section navigation, table rendering, form submission, search functionality, sorting, statistics calculation, chart rendering, and settings management. The module is approximately 700 lines and represents the majority of the application's interactive behavior.
 
 ---
 
-## Data Model
+## Regex Validation Catalog
 
-Transactions are stored as a flat JSON array in `localStorage` under the key `pesaani:transactions`.
+PESAANI implements five regex patterns to ensure data integrity. These patterns range from basic format validation to advanced techniques like back-references.
 
-### Transaction Object
+### Pattern 1: Description Validation
 
-```json
-{
-  "id": "txn_1700000001",
-  "description": "Cafeteria lunch",
-  "amount": 3500,
-  "category": "Food",
-  "date": "2026-02-01",
-  "createdAt": "2026-02-01T12:00:00.000Z",
-  "updatedAt": "2026-02-01T12:00:00.000Z"
-}
+**Regex:** `/^\S(?:.*\S)?$/`
+
+**Purpose:** Ensures transaction descriptions do not begin or end with whitespace characters.
+
+**How it works:**
+
+- `^` asserts the start of the string
+- `\S` matches any non-whitespace character (required first character)
+- `(?:.*\S)?` is an optional non-capturing group that matches any characters (.\*) ending with a non-whitespace character (\S)
+- `$` asserts the end of the string
+
+**Valid examples:**
+
+- "Coffee at Starbucks" — standard text with spaces
+- "Lunch" — single word with no spaces
+- "Bus pass for November" — multiple words with spaces
+
+**Invalid examples:**
+
+- " Coffee" — rejected due to leading space
+- "Coffee " — rejected due to trailing space
+- " " — rejected because it contains only whitespace
+
+This pattern ensures clean data entry and prevents accidental whitespace that could cause duplicate entries or sorting issues.
+
+### Pattern 2: Multiple Spaces Detection
+
+**Regex:** `/\s{2,}/`
+
+**Purpose:** Detects two or more consecutive whitespace characters within descriptions.
+
+**How it works:**
+
+- `\s` matches any whitespace character (space, tab, newline)
+- `{2,}` quantifier matches two or more occurrences
+
+**Valid examples:**
+
+- "Coffee at Starbucks" — single spaces between words
+- "Lunch break" — single space between words
+
+**Invalid examples:**
+
+- "Coffee at Starbucks" — contains double spaces
+- "Lunch break" — contains triple space
+
+This validation prevents formatting inconsistencies that could make the transaction list appear untidy or unprofessional.
+
+### Pattern 3: Duplicate Word Detection (ADVANCED)
+
+**Regex:** `/\b(\w+)\s+\1\b/i`
+
+**Purpose:** Identifies accidentally repeated words within descriptions. This is the most advanced pattern in the application.
+
+**How it works:**
+
+- `\b` asserts a word boundary (transition between word and non-word character)
+- `(\w+)` is a capturing group that matches one or more word characters and stores the match
+- `\s+` matches one or more whitespace characters
+- `\1` is a back-reference that matches the exact text captured by group 1
+- `\b` asserts another word boundary
+- `i` flag makes the match case-insensitive
+
+**Valid examples:**
+
+- "Coffee at Starbucks" — no repeated words
+- "Lunch break today" — all unique words
+
+**Invalid examples:**
+
+- "Coffee coffee" — "coffee" appears twice consecutively
+- "The the book" — "the" appears twice consecutively
+- "Lunch lunch break" — "lunch" appears twice consecutively
+
+**Why this is advanced:** Back-references are a powerful regex feature that allow patterns to reference previously captured groups. This enables validation that would be impossible with simple character matching. The pattern dynamically adapts to match any repeated word, not just a predefined list.
+
+This validation catches common typing errors where users accidentally type the same word twice, improving data quality without being overly restrictive.
+
+### Pattern 4: Amount Validation
+
+**Regex:** `/^(0|[1-9]\d*)(\.\d{1,2})?$/`
+
+**Purpose:** Ensures amounts are valid positive numbers with optional decimal places.
+
+**How it works:**
+
+- `^` asserts the start of the string
+- `(0|[1-9]\d*)` matches either "0" or a number starting with 1-9 followed by any digits (prevents leading zeros)
+- `(\.\d{1,2})?` is an optional group matching a decimal point followed by 1-2 digits
+- `$` asserts the end of the string
+
+**Valid examples:**
+
+- "0" — zero is allowed
+- "5000" — whole number
+- "5000.5" — one decimal place
+- "5000.50" — two decimal places
+
+**Invalid examples:**
+
+- "-100" — negative numbers rejected
+- "01" — leading zero rejected
+- "5000.123" — more than 2 decimal places rejected
+- "abc" — non-numeric input rejected
+
+This pattern ensures financial amounts are properly formatted and prevents negative values, which would not make sense in an expense tracker context.
+
+### Pattern 5: Date Validation (YYYY-MM-DD)
+
+**Regex:** `/^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/`
+
+**Purpose:** Validates dates in YYYY-MM-DD format with basic calendar awareness.
+
+**How it works:**
+
+- `^\d{4}` matches exactly four digits for the year
+- `(0[1-9]|1[0-2])` matches months 01-12 (0 followed by 1-9, or 1 followed by 0-2)
+- `(0[1-9]|[12]\d|3[01])` matches days 01-31 (0 followed by 1-9, 1 or 2 followed by any digit, or 3 followed by 0-1)
+- `$` asserts the end of the string
+
+### Pattern 6: Category Validation
+
+**Regex:** `/^[A-Za-z]+(?:[ -][A-Za-z]+)*$/`
+
+**Purpose:** Ensures category names contain only letters, spaces, and hyphens.
+
+**How it works:**
+
+- `^[A-Za-z]+` matches one or more letters at the start
+- `(?:[ -][A-Za-z]+)*` is a non-capturing group that matches zero or more occurrences of (space or hyphen followed by one or more letters)
+- `$` asserts the end of the string
+
+**Valid examples:**
+
+- "Food" — single word
+- "Self Help" — two words with space
+- "Self-Help" — two words with hyphen
+
+**Invalid examples:**
+
+- "Food123" — contains numbers
+- "Food " — trailing space
+- "-Food" — starts with hyphen
+- "Food-" — ends with hyphen
+
+This pattern ensures category names remain clean and professional while allowing multi-word categories like "Self Help" or "Study Materials".
+
+---
+
+## Installation and Usage
+
+### Option 1: Live Demo
+
+The application is deployed and accessible at:
+https://raphaelmstudios.github.io/student-finance-tracker
+
+No installation is required. Simply visit the URL in any modern web browser.
+
+### Option 2: Run Locally
+
+Running the application locally requires a web server due to CORS restrictions on ES Modules.
+
+**Step 1: Clone the repository**
+
+```bash
+git clone https://github.com/raphaelmstudios/student-finance-tracker.git
+cd student-finance-tracker
 ```
 
-### Field Reference
+**Step 2: Start a local web server**
 
-| Field         | Type   | Notes                                                                  |
-| ------------- | ------ | ---------------------------------------------------------------------- |
-| `id`          | String | Generated as `txn_` + `Date.now()`                                     |
-| `description` | String | User-entered, cleaned of extra whitespace                              |
-| `amount`      | Number | Stored in RWF (Rwandan Francs)                                         |
-| `category`    | String | One of: `Food`, `Books`, `Transport`, `Entertainment`, `Fees`, `Other` |
-| `date`        | String | Format: `YYYY-MM-DD`                                                   |
-| `createdAt`   | String | ISO 8601 timestamp                                                     |
-| `updatedAt`   | String | ISO 8601 timestamp, updated on edit                                    |
+Using Python 3:
 
-### Settings Object
-
-Stored separately under `pesaani:settings`:
-
-```json
-{
-  "rates": { "usd": 0.000685, "gbp": 0.000504 },
-  "budgetCap": 500000
-}
+```bash
+python -m http.server 8000
 ```
 
----
+Using Node.js http-server:
 
-## Validation Rules & Regex Catalog
+```bash
+npx http-server -p 8000
+```
 
-All form input is validated in `validators.js` before any data is saved. The `compileRegex()` function wraps `new RegExp()` in a try/catch so invalid patterns fail gracefully.
+Using PHP:
 
-| Field                                        | Pattern                                    | Description                                                                                 |
-| -------------------------------------------- | ------------------------------------------ | ------------------------------------------------------------------------------------------- |
-| Description — no leading/trailing spaces     | `^\S(?:.*\S)?$`                            | Rejects values that start or end with whitespace                                            |
-| Description — no consecutive spaces          | `\s{2,}`                                   | Rejects two or more whitespace characters in a row                                          |
-| Description — no duplicate adjacent words ⭐ | `\b(\w+)\s+\1\b` (back-reference)          | Advanced: catches repeated words like "the the"                                             |
-| Amount — positive, max 2 decimals            | `^(0\|[1-9]\d*)(\.\d{1,2})?$`              | Accepts `5000` or `5000.50`, rejects negatives and extra decimals                           |
-| Date — ISO 8601 format                       | `^\d{4}-\d{2}-\d{2}$`                      | Enforces `YYYY-MM-DD` format, followed by a real calendar date check                        |
-| Category — letters, spaces, hyphens only     | `^[A-Za-z]+(?:[ -][A-Za-z]+)*$`            | Rejects numbers and special characters                                                      |
-| Search — live regex                          | User-supplied pattern via `compileRegex()` | Compiled safely; matches against description and category fields with `<mark>` highlighting |
+```bash
+php -S localhost:8000
+```
 
-⭐ The duplicate word check uses a **regex back-reference** (`\1`) — an advanced pattern that references the first capture group to detect repeated adjacent words.
+Using VS Code Live Server extension:
+Right-click index.html and select "Open with Live Server"
 
----
+**Step 3: Open in browser**
+Navigate to: http://localhost:8000
 
-## Keyboard Navigation Map
+### Option 3: Import Sample Data
 
-The app is fully operable using a keyboard alone.
+To quickly populate the application with sample transactions:
 
-| Key                          | Action                                                                 |
-| ---------------------------- | ---------------------------------------------------------------------- |
-| `Tab`                        | Move focus forward through interactive elements                        |
-| `Shift + Tab`                | Move focus backward                                                    |
-| `Enter` / `Space`            | Activate focused button or link                                        |
-| `Tab` on page load           | Reveals the skip link — press `Enter` to jump to main content          |
-| `Escape`                     | Closes the mobile navigation drawer                                    |
-| `Tab` into nav links         | Navigate between About, Dashboard, Records, Transactions, Settings     |
-| `Tab` into table             | Focus sort buttons (Date, Description, Amount)                         |
-| `Enter` on sort button       | Toggles sort ascending/descending for that column                      |
-| `Tab` to Edit/Delete buttons | Focus row action buttons in the records table                          |
-| `Enter` on Edit              | Opens the form pre-filled with that transaction's data                 |
-| `Enter` on Delete            | Triggers confirmation dialog                                           |
-| `Tab` through form           | Moves through Description → Amount → Category → Date → Submit → Cancel |
-| `Enter` on Submit            | Validates and saves the transaction                                    |
-| `Enter` on Cancel            | Resets the form and returns to Records                                 |
+1. Navigate to the Settings section using the navigation menu
+2. Click the "Import JSON" button in the Data Management section
+3. Select the included seed.json file from the file picker dialog
+4. Confirm the import operation in the confirmation dialog (this will replace current data)
+5. Navigate to the Records section to view the 12 imported sample transactions
+
+The sample data includes diverse transaction types across all categories, providing a realistic dataset for testing search, sorting, and statistics features.
 
 ---
 
-## Accessibility
+### Known Limitations
 
-PESAANI was built with accessibility as a core requirement, not an afterthought.
+**Internet Explorer** — Not supported. The application uses ES6 syntax and modern CSS features that are not available in IE11 or earlier.
 
-- **Semantic HTML** — proper use of `<header>`, `<nav>`, `<main>`, `<footer>`, `<section>`, `<table>`, `<form>`, and `<button>` throughout
-- **Heading hierarchy** — `<h1>` → `<h2>` → `<h3>` maintained across all sections with no skipped levels
-- **ARIA roles** — `role="banner"`, `role="contentinfo"`, `role="search"`, `role="status"`, `role="list"`, `role="alert"` applied to appropriate elements
-- **ARIA live regions** — `aria-live="polite"` on search results count and budget status; `aria-live="assertive"` on form error messages and budget overage alerts so screen readers announce changes immediately
-- **ARIA labels** — `aria-label` on nav, chart region, table, and all icon-only buttons (Edit, Delete, sort buttons, hamburger toggle)
-- **ARIA required** — `aria-required="true"` on all mandatory form fields
-- **Skip link** — a visually hidden "Skip to main content" link appears on first `Tab` press, allowing keyboard users to bypass the navigation
-- **Focus indicators** — all interactive elements have visible `:focus-visible` outlines using `var(--forest-light)` colour
-- **Colour contrast** — forest green (`#2d4a3e`) on cream (`#faf7f2`) background passes WCAG AA contrast ratio
-- **Alt text** — all images have descriptive `alt` attributes
-- **Screen reader chart** — the 7-day bar chart (`aria-hidden="true"`) has a companion `<p class="sr-only">` with a human-readable text summary updated via `aria-live="polite"`
-- **Form error messages** — each field has a paired `<span role="alert">` that fills with the error message on failed validation and is announced immediately by screen readers
+**Very Old Mobile Devices** — Devices running iOS 15 or earlier or Android 9 or earlier may experience degraded performance or missing features.
+
+**JavaScript Disabled** — The application requires JavaScript to function. Users with JavaScript disabled will see no content beyond the HTML structure.
+
+**Third-Party Cookies Disabled** — Does not affect functionality since the application uses localStorage, not cookies.
 
 ---
 
-## Testing
+## Running Tests
 
-Open `tests.html` in a browser to run the automated test suite. Tests are self-contained and output pass/fail results inline in green and red.
+The application includes an automated test suite to verify core functionality. Tests cover validation logic, storage operations, and data integrity.
 
-**Tests cover:**
+### How to Run Tests
 
-- `compileRegex()` handles invalid patterns gracefully (returns `null` instead of throwing)
-- `validateDescription()` rejects duplicate adjacent words
-- `validateAmount()` accepts valid decimals and rejects negative values
-- `validateDate()` rejects non-existent calendar dates (e.g. `2026-02-30`)
-- `validateCategory()` rejects values containing numbers
-- `validateForm()` passes with a complete, valid data object
-- `localStorage` save and load round-trip works correctly
-- `localStorage` clear leaves an empty array
-- All 20 records in `seed.json` conform to the full transaction schema
+1. Open tests.html in a web browser: http://localhost:8000/tests.html
+2. The tests execute automatically when the page loads
+3. Results appear as a bulleted list with green (pass) or red (fail) indicators
 
----
+### Test Coverage
 
-## Getting Started
+The test suite validates the following functionality:
 
-No build step or install required.
+**Safe Regex Compilation** — Verifies that the compileRegex function handles invalid patterns gracefully by returning null instead of throwing errors. Tests the pattern "(" which is syntactically invalid.
 
-1. Clone the repository:
+**Description Validation** — Tests the duplicate word detection regex by confirming that "coffee coffee" is rejected as invalid.
 
-   ```bash
-   git clone https://github.com/raphaelmstudios/student-finance-tracker.git
-   cd student-finance-tracker
-   ```
+**Amount Validation** — Confirms that valid decimal amounts like "5000.50" are accepted and negative values like "-100" are rejected.
 
-2. Serve locally using any of the following:
+**Date Validation** — Verifies that impossible calendar dates like "2026-02-30" are rejected even though they match the regex pattern.
 
-   ```bash
-   # VS Code — install the Live Server extension and click "Go Live"
+**Category Validation** — Tests that categories containing numbers like "Food123" are properly rejected.
 
-   # Node
-   npx serve .
+**Form Validation** — Confirms that the validateForm function correctly accepts valid data containing all required fields with correct values.
 
-   # Python
-   python -m http.server 8000
-   ```
+**localStorage Save/Load** — Tests that data can be saved to localStorage and retrieved correctly. Verifies that saved data maintains its structure and values.
 
-3. Open `http://localhost:8000` (or the Live Server URL) in your browser
+**localStorage Clear** — Confirms that the clear function successfully removes all stored data, resulting in an empty array when load is called.
 
-4. To load sample data, go to **Settings → Import JSON** and select `seed.json`
+**JSON Schema Validation** — Fetches seed.json and validates that every record contains all required fields with correct data types. This ensures the sample data file is properly structured.
 
-5. To run the test suite, open `tests.html` in the browser
+### Expected Results
 
-> **Note:** The app uses ES Modules (`type="module"`). It must be served over HTTP — opening `index.html` directly as a `file://` URL will cause module import errors.
+When all tests pass, the results list will display nine green items. If any test fails, it will appear in red with a descriptive name indicating which functionality failed.
+
+Common reasons for test failures include:
+
+- Missing dependencies (validators.js, search.js, or storage.js not found)
+- Module import errors (incorrect file paths)
+- Changes to validation logic that break expected behavior
+- Corrupted or invalid seed.json file
+- Browser blocking localStorage access (private browsing mode)
 
 ---
 
-## Limitations
+## Author
 
-- Client-side only — no backend, no authentication
-- Data is tied to the browser and device (`localStorage`)
-- Not optimised for very large transaction volumes
-- Currency conversion rates are manually configured — not pulled from a live API
+**Raphael Musau**
 
----
+GitHub: github.com/raphaelmstudios  
+Email: r.musau@alustudent.com
 
-## Base Currency
-
-All amounts are stored and displayed in **RWF (Rwandan Francs)**. Exchange rates for USD and GBP can be updated in Settings and are persisted to `localStorage`.
+This project was developed as part of the Responsive UI coursework at African Leadership University, demonstrating proficiency in vanilla web technologies, accessible design, and modular JavaScript architecture.
 
 ---
 
-_© 2025 PESAANI — Developed by Raphael Mumo_
+**Built for students, by a student.**
