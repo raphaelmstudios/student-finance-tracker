@@ -244,6 +244,19 @@ function formatNumber(num) {
   });
 }
 
+function formatConverted(amount) {
+  const rates = getRates();
+  const usd = (amount * rates.usd).toLocaleString("en-US", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+  const gbp = (amount * rates.gbp).toLocaleString("en-US", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+  return `≈ $${usd} · £${gbp}`;
+}
+
 /*Make sort buttons work*/
 
 function setupSort() {
@@ -510,6 +523,8 @@ function updateStats() {
   const totalSpending = transactions.reduce((sum, t) => sum + t.amount, 0);
   document.getElementById("stat-spending").textContent =
     `FRw ${formatNumber(totalSpending)}`;
+  document.getElementById("stat-spending-converted").textContent =
+    formatConverted(totalSpending);
 
   // Stat 3: Top category (category with most spending)
   const topCategory = getTopCategory(transactions);
@@ -519,6 +534,8 @@ function updateStats() {
   const last7Days = getLast7DaysSpending(transactions);
   document.getElementById("stat-week").textContent =
     `FRw ${formatNumber(last7Days)}`;
+  document.getElementById("stat-week-converted").textContent =
+    formatConverted(last7Days);
 
   updateBudgetStatus(totalSpending);
 }
