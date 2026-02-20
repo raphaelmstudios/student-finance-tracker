@@ -340,17 +340,15 @@ nav[aria-label="Main navigation"] li {
 
 /* Backdrop overlay */
 .nav-backdrop {
+  display: none;
   position: fixed;
   inset: 0;
   background: rgba(15, 15, 13, 0.4);
   z-index: 203;
-  opacity: 0;
   pointer-events: none;
-  transition: opacity 0.3s ease;
 }
 
 .nav-backdrop.visible {
-  opacity: 1;
   pointer-events: auto;
 }
 
@@ -1346,4 +1344,128 @@ tbody tr:last-child td {
   .form-card {
     padding: 48px;
   }
+}
+
+/* DARK MODE */
+
+/* Dark mode colour overrides */
+[data-theme="dark"] {
+  --ink: #f0ede6;
+  --ink-mid: #d9d4c7;
+  --ink-light: #a89f8c;
+  --ink-muted: #6b6358;
+  --forest: #5a8a78;
+  --forest-mid: #7ab648;
+  --forest-light: #9fd46a;
+  --leaf: #9fd46a;
+  --parchment: #1e2420;
+  --parchment-dark: #2a332e;
+  --cream: #161a18;
+  --red: #f87171;
+  --red-light: #2d1515;
+  --white: #1e2420;
+}
+
+/* Override specific things that don't work with variable swap alone */
+[data-theme="dark"] body {
+  background-image:
+    radial-gradient(
+      ellipse at 20% 0%,
+      rgba(90, 138, 120, 0.08) 0%,
+      transparent 60%
+    ),
+    radial-gradient(
+      ellipse at 80% 100%,
+      rgba(159, 212, 106, 0.05) 0%,
+      transparent 50%
+    );
+}
+
+[data-theme="dark"] header {
+  background-color: #0f1512;
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="dark"] .stat-card,
+[data-theme="dark"] .budget-cap,
+[data-theme="dark"] .chart-container,
+[data-theme="dark"] .settings-group,
+[data-theme="dark"] .form-card,
+[data-theme="dark"] .controls {
+  background: #1e2420;
+  border-color: #2a332e;
+}
+
+[data-theme="dark"] table {
+  background: #1e2420;
+}
+
+[data-theme="dark"] td {
+  border-bottom-color: #2a332e;
+}
+
+[data-theme="dark"] tbody tr:hover {
+  background: rgba(90, 138, 120, 0.1);
+}
+
+[data-theme="dark"] input[type="text"],
+[data-theme="dark"] input[type="number"],
+[data-theme="dark"] input[type="file"],
+[data-theme="dark"] select {
+  background: #161a18;
+  border-color: #2a332e;
+  color: #d9d4c7;
+}
+
+[data-theme="dark"] input:focus,
+[data-theme="dark"] select:focus {
+  background: #1e2420;
+  border-color: #5a8a78;
+  box-shadow: 0 0 0 3px rgba(90, 138, 120, 0.2);
+}
+
+[data-theme="dark"] .table-wrapper {
+  border-color: #2a332e;
+}
+
+[data-theme="dark"] footer {
+  background: #0a0d0b;
+}
+
+[data-theme="dark"] .form-actions {
+  border-top-color: #2a332e;
+}
+
+[data-theme="dark"] .settings-group h3 {
+  border-bottom-color: #2a332e;
+}
+
+[data-theme="dark"] .nav-backdrop {
+  background: rgba(0, 0, 0, 0.6);
+}
+
+/* Dark mode toggle button */
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1.5px solid rgba(255, 255, 255, 0.25);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background 0.2s ease;
+  flex-shrink: 0;
+  padding: 0;
+}
+
+.theme-toggle:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.theme-toggle:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.6);
+  outline-offset: 2px;
 }

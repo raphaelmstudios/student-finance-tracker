@@ -28,6 +28,7 @@ document.addEventListener("DOMContentLoaded", () => {
   init();
   setupNavigation();
   setupHamburger();
+  setupThemeToggle();
   setupForm();
   setupSearch();
   setupSort();
@@ -832,4 +833,34 @@ function renderChart() {
     )
     .join(", ");
   chartSr.textContent = `7-day spending: ${srText}`;
+}
+
+/* Dark mode toggle */
+function setupThemeToggle() {
+  const btn = document.getElementById("theme-toggle");
+  const saved = localStorage.getItem("pesaani:theme");
+
+  // Restore saved preference on load
+  if (saved === "dark") {
+    document.documentElement.setAttribute("data-theme", "dark");
+    btn.textContent = "☀️";
+    btn.setAttribute("aria-label", "Switch to light mode");
+  }
+
+  btn.addEventListener("click", () => {
+    const isDark =
+      document.documentElement.getAttribute("data-theme") === "dark";
+
+    if (isDark) {
+      document.documentElement.removeAttribute("data-theme");
+      btn.textContent = "🌙";
+      btn.setAttribute("aria-label", "Switch to dark mode");
+      localStorage.setItem("pesaani:theme", "light");
+    } else {
+      document.documentElement.setAttribute("data-theme", "dark");
+      btn.textContent = "☀️";
+      btn.setAttribute("aria-label", "Switch to light mode");
+      localStorage.setItem("pesaani:theme", "dark");
+    }
+  });
 }
