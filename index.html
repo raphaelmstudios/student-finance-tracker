@@ -11,7 +11,7 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="styles/main.css" />
-    <link rel="icon" type="image/png" href="assets/Untitled design/5.png" />
+    <link rel="icon" type="image/png" href="assets/images/5.png" />
   </head>
   <body>
     <a href="#main" class="skip-link">Skip to main content</a>
@@ -21,11 +21,7 @@
       <div class="header-inner">
         <div class="header-brand">
           <a href="#about" class="brand-link">
-            <img
-              src="assets/Untitled design/4.png"
-              alt="PESAANI"
-              class="header-logo"
-            />
+            <img src="assets/images/4.png" alt="PESAANI" class="header-logo" />
           </a>
           <p class="app-tagline">Your Money • Your Clarity</p>
         </div>
@@ -62,6 +58,15 @@
         class="section active"
         aria-labelledby="about-heading"
       >
+        <!-- Hero image — full viewport width on desktop -->
+        <div class="hero-image-wrapper">
+          <img
+            src="assets/images/Your Money • Your Clarity.png"
+            alt="Your Money • Your Clarity — PESAANI hero image"
+            class="hero-image"
+          />
+        </div>
+
         <h2 id="about-heading">About PESAANI</h2>
 
         <p>
@@ -127,7 +132,8 @@
           </div>
           <div class="stat-card">
             <h3>Total Spending</h3>
-            <p id="stat-spending">FRw0.00</p>
+            <!-- FIX: was $0.00, now matches FRw currency used throughout the app -->
+            <p id="stat-spending">FRw 0.00</p>
           </div>
           <div class="stat-card">
             <h3>Top Category</h3>
@@ -135,7 +141,8 @@
           </div>
           <div class="stat-card">
             <h3>Last 7 Days</h3>
-            <p id="stat-week">FRw0.00</p>
+            <!-- FIX: was $0.00, now matches FRw currency used throughout the app -->
+            <p id="stat-week">FRw 0.00</p>
           </div>
         </div>
 

@@ -835,6 +835,44 @@ tbody tr:last-child td {
   opacity: 0.35;
 }
 
+/*ABOUT PAGE — HERO IMAGE*/
+
+.hero-image-wrapper {
+  /* Cancel main's padding-top exactly to flush against the navbar */
+  margin: -32px -24px 40px -24px;
+  overflow: hidden;
+  line-height: 0;
+  padding: 0;
+  font-size: 0;
+}
+
+.hero-image {
+  width: 100%;
+  height: auto;
+  display: block;
+  vertical-align: top;
+  border: 0;
+}
+
+@media (min-width: 768px) {
+  .hero-image-wrapper {
+    margin: -48px -32px 48px -32px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .hero-image-wrapper {
+    position: relative;
+    left: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    /* Cancel desktop main padding-top of 48px precisely */
+    margin-top: -48px;
+    margin-bottom: 56px;
+    width: 100vw;
+  }
+}
+
 /*ABOUT PAGE — CONTACT CARD*/
 /* FIX: .contact-card was referenced in HTML but had no CSS definition */
 .contact-card {
