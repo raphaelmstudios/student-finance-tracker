@@ -432,7 +432,6 @@ footer a:hover {
 
 /*BUTTONS*/
 
-/* Primary button (default) */
 /* Base button */
 button {
   font-family: var(--font-body);
@@ -794,6 +793,8 @@ tbody tr:last-child td {
   white-space: nowrap;
 }
 
+/* FIX: Classes now match capitalised category values from the select options
+   e.g. category="Food" → class="cat-Food" (not cat-food) */
 .cat-Food {
   background: rgba(122, 182, 72, 0.14);
   color: #2a5200;
@@ -832,6 +833,38 @@ tbody tr:last-child td {
   font-size: 32px;
   margin-bottom: 12px;
   opacity: 0.35;
+}
+
+/*ABOUT PAGE — CONTACT CARD*/
+/* FIX: .contact-card was referenced in HTML but had no CSS definition */
+.contact-card {
+  background: var(--white);
+  border: 1px solid var(--parchment-dark);
+  border-left: 4px solid var(--forest);
+  border-radius: 12px;
+  padding: 20px 24px;
+  margin-top: 8px;
+  box-shadow: var(--shadow-sm);
+}
+
+.contact-card p {
+  margin-bottom: 8px;
+  font-size: 15px;
+  color: var(--ink-mid);
+}
+
+.contact-card p:last-child {
+  margin-bottom: 0;
+}
+
+.contact-card a {
+  color: var(--forest-mid);
+  font-weight: 600;
+}
+
+.contact-card a:hover {
+  color: var(--forest);
+  text-decoration: underline;
 }
 
 /*DASHBOARD CARDS*/

@@ -49,12 +49,22 @@ function setupNavigation() {
       e.preventDefault();
 
       const targetId = this.getAttribute("href").substring(1);
-      console.log("Clicked:", targetId);
 
-      showSection(targetId);
+      const isDrawerOpen = document
+        .getElementById("main-nav")
+        .classList.contains("nav-open");
 
-      // Close drawer immediately
-      closeHamburger();
+      if (isDrawerOpen) {
+        // Close drawer first, then navigate after animation + overflow release
+        closeHamburger();
+        setTimeout(() => {
+          showSection(targetId);
+          window.scrollTo({ top: 0 }); // instant scroll after lock is released
+        }, 380); // slightly after 350ms transition
+      } else {
+        // Desktop — just navigate immediately
+        showSection(targetId);
+      }
     });
   });
 }
@@ -123,9 +133,6 @@ function showSection(sectionId) {
       link.classList.add("active");
     }
   });
-
-  // Scroll once (after everything updates)
-  window.scrollTo({ top: 0, behavior: "smooth" });
 
   // If showing records section, refresh the table
   if (sectionId === "records") {
@@ -205,7 +212,7 @@ function renderTable() {
         <td class="col-date">${transaction.date}</td>
         <td>${description}</td>
         <td class="col-amount">FRw ${formatNumber(transaction.amount)}</td>
-        <td><span class="category-badge cat-${transaction.category.toLowerCase().replace(/\s+/g, "-")}">${category}</span></td>
+        <td><span class="category-badge cat-${transaction.category.replace(/\s+/g, "-")}">${category}</span></td>
         <td>
           <button class="action-btn btn-edit" data-id="${transaction.id}"
             aria-label="Edit ${transaction.description}">Edit</button>

@@ -1,150 +1,204 @@
-# Pesaani
+# PESAANI — Student Finance Tracker
 
-> A modular financial data validation system built with vanilla HTML, CSS, and JavaScript.
+> A lightweight, accessible personal finance tracker built for students, using vanilla HTML, CSS, and JavaScript.
 
-**Author:** Raphael Mumo
+**Author:** Raphael Mumo  
+**GitHub:** [raphaelmstudios](https://github.com/raphaelmstudios)  
+**Email:** r.musau@alustudent.com
 
 ---
 
-## Abstract
+## Table of Contents
 
-**Pesaani** is a modular financial data validation system implemented using modern JavaScript (ES Modules). The project enforces structural, syntactic, and logical integrity of financial records stored in JSON format prior to application-level processing.
+- [Overview](#overview)
+- [Features](#features)
+- [Project Structure](#project-structure)
+- [How It Works](#how-it-works)
+- [Data Model](#data-model)
+- [Validation Rules](#validation-rules)
+- [Testing](#testing)
+- [Getting Started](#getting-started)
+- [Limitations](#limitations)
 
-Designed with a strong emphasis on modularity, correctness, and testability, Pesaani ensures that imported financial data fully complies with predefined validation constraints — without reliance on any external libraries or frameworks.
+---
+
+## Overview
+
+**PESAANI** (Swahili for "in the wallet") is a browser-based student finance tracker that helps users log, search, sort, and analyse their daily spending. It stores data locally in the browser using `localStorage` — no server, no signup, no dependencies.
+
+The project is structured around ES Modules with a clear separation of concerns across five focused JavaScript files.
+
+---
+
+## Features
+
+- **Add, edit, and delete** expense transactions
+- **Search** transactions using regex patterns with optional case sensitivity
+- **Sort** records by date, description, or amount
+- **Dashboard** with live stats: total transactions, total spending, top category, and last 7 days
+- **7-day bar chart** with hover tooltips showing daily spending
+- **Budget cap** — set a monthly spending limit with visual alerts when exceeded
+- **Currency conversion** — configurable RWF → USD and GBP exchange rates
+- **Export** transactions as JSON
+- **Import** transactions from a JSON file
+- **Responsive design** — mobile drawer navigation, tablet and desktop layouts
+- **Accessible** — ARIA roles, live regions, skip links, keyboard navigation, screen reader support
+- All data stored in **localStorage** — works offline, no backend required
 
 ---
 
 ## Project Structure
 
 ```
-/project-root
+/
+├── index.html              # Main app shell — all 5 sections
+├── tests.html              # Browser-based automated test suite
+├── seed.json               # 20 sample transactions for testing
+├── README.md
 │
-├── index.html
-├── tests.html
-├── validators.js
-├── seed.json
-└── README.md
+├── scripts/
+│   ├── ui.js               # Main controller — DOM, events, rendering
+│   ├── validators.js       # Regex-based form validation
+│   ├── search.js           # Regex search and highlight logic
+│   ├── state.js            # In-memory state management
+│   └── storage.js          # localStorage read/write helpers
+│
+└── styles/
+    └── main.css            # All styles — layout, components, responsive
 ```
 
-### Module Overview
+### Module Responsibilities
 
-| File | Responsibility |
-|------|---------------|
-| `validators.js` | Encapsulates all validation logic via exported functions |
-| `seed.json` | Structured test dataset used across validation scenarios |
-| `tests.html` | Browser-based test harness aligned to validation rubric |
-| `index.html` | Optional primary execution environment |
-
-All modules are loaded using ES Module syntax (`type="module"`), ensuring scoped imports and explicit, auditable exports.
-
----
-
-## Technology Stack
-
-Built entirely with **vanilla web technologies** — no frameworks, no dependencies:
-
-- **HTML** — Structure and test harness interface
-- **CSS** — Presentation and layout
-- **JavaScript (ES Modules)** — Validation logic and module architecture
+| File            | Responsibility                                                                                                                              |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ui.js`         | Initialises the app, handles all DOM interactions, renders the table and chart, manages navigation and form state                           |
+| `validators.js` | Exports `validateDescription`, `validateAmount`, `validateDate`, `validateCategory`, `validateForm`, `cleanDescription`, and `compileRegex` |
+| `search.js`     | Exports `compileRegex`, `highlight`, and `searchTransactions` for live regex search with HTML highlighting                                  |
+| `state.js`      | Holds transactions, exchange rates, and budget cap in memory; syncs to `storage.js` on every change                                         |
+| `storage.js`    | Wraps `localStorage` with safe `save`, `load`, `clear`, `saveSettings`, `loadSettings`, and `clearAll` functions                            |
 
 ---
 
-## Data Model Specification
+## How It Works
 
-### Root Structure
+The app is a single-page application with five sections controlled by JavaScript — only one section is visible at a time:
+
+| Section          | Description                                                  |
+| ---------------- | ------------------------------------------------------------ |
+| **About**        | Project info and developer contact                           |
+| **Dashboard**    | Stat cards, 7-day spending chart, and budget cap controls    |
+| **Records**      | Searchable, sortable transaction table with edit and delete  |
+| **Transactions** | Add or edit a transaction via a validated form               |
+| **Settings**     | Configure exchange rates, export/import JSON, clear all data |
+
+Navigation is handled entirely in JavaScript via `showSection()`. On mobile, a hamburger drawer slides in from the right with a backdrop overlay.
+
+Data flows in one direction: the form writes to `state.js` → `state.js` persists via `storage.js` → `ui.js` reads state to re-render the table, chart, and stats.
+
+---
+
+## Data Model
+
+Transactions are stored as a flat JSON array in `localStorage` under the key `pesaani:transactions`.
+
+### Transaction Object
 
 ```json
 {
-  "accounts": [],
-  "transactions": []
+  "id": "txn_1700000001",
+  "description": "Cafeteria lunch",
+  "amount": 3500,
+  "category": "Food",
+  "date": "2026-02-01",
+  "createdAt": "2026-02-01T12:00:00.000Z",
+  "updatedAt": "2026-02-01T12:00:00.000Z"
 }
 ```
 
-Both root-level keys are mandatory. Absence of either key constitutes a structural validation failure.
+### Field Reference
+
+| Field         | Type   | Notes                                                                  |
+| ------------- | ------ | ---------------------------------------------------------------------- |
+| `id`          | String | Generated as `txn_` + `Date.now()`                                     |
+| `description` | String | User-entered, cleaned of extra whitespace                              |
+| `amount`      | Number | Stored in RWF (Rwandan Francs)                                         |
+| `category`    | String | One of: `Food`, `Books`, `Transport`, `Entertainment`, `Fees`, `Other` |
+| `date`        | String | Format: `YYYY-MM-DD`                                                   |
+| `createdAt`   | String | ISO 8601 timestamp                                                     |
+| `updatedAt`   | String | ISO 8601 timestamp, updated on edit                                    |
+
+### Settings Object
+
+Stored separately under `pesaani:settings`:
+
+```json
+{
+  "rates": { "usd": 0.000685, "gbp": 0.000504 },
+  "budgetCap": 500000
+}
+```
 
 ---
 
-### Account Schema
+## Validation Rules
 
-| Field | Type | Constraint |
-|-------|------|------------|
-| `id` | String | Required, must be unique |
-| `name` | String | Required |
-| `balance` | Number | Required, must be ≥ 0 |
+All form input is validated in `validators.js` before any data is saved.
 
----
+| Field         | Rule                                                                                                                 |
+| ------------- | -------------------------------------------------------------------------------------------------------------------- |
+| `description` | Cannot be empty, cannot start/end with spaces, no consecutive spaces, no duplicate adjacent words (e.g. `"the the"`) |
+| `amount`      | Must be a positive number, max 2 decimal places (e.g. `5000` or `5000.50`)                                           |
+| `date`        | Must match `YYYY-MM-DD` and represent a real calendar date                                                           |
+| `category`    | Must be selected from the predefined list; letters, spaces, and hyphens only                                         |
 
-### Transaction Schema
-
-| Field | Type | Constraint |
-|-------|------|------------|
-| `id` | String | Required, must be unique |
-| `accountId` | String | Must reference an existing account |
-| `amount` | Number | Required, must be > 0 |
-| `type` | String | Enumerated: `"credit"` or `"debit"` |
-| `date` | String | Must conform to ISO 8601 format |
+The `compileRegex()` function in both `validators.js` and `search.js` wraps `new RegExp()` in a try/catch so invalid patterns fail gracefully rather than throwing.
 
 ---
 
-## Validation Strategy
+## Testing
 
-Pesaani applies a layered, defence-in-depth validation pipeline:
+Open `tests.html` in a browser to run the automated test suite. Tests are self-contained and output pass/fail results inline.
 
-### 1. Structural Validation
-Confirms that required root keys exist, that arrays are correctly formed, and that all mandatory object fields are present before any deeper validation occurs.
+**Tests cover:**
 
-### 2. Type Validation
-Enforces primitive type correctness across all fields, rejecting `null`, `undefined`, or incorrectly typed values that would otherwise pass surface-level checks.
-
-### 3. Regex-Based Validation
-Implemented via the exported `compileRegex()` function, this layer validates account IDs, transaction IDs, ISO 8601 date strings, and enumerated transaction type values against defined patterns.
-
-### 4. Referential Integrity Validation
-Every transaction is verified to reference a valid, existing `accountId`. Orphaned transaction records — those pointing to non-existent accounts — are detected and rejected at this stage.
-
-### 5. Defensive Validation
-Guards against malformed JSON structures, partial imports, and corrupted data records. Invalid test cases are identified explicitly rather than silently passed or ignored.
+- `compileRegex()` handles invalid patterns gracefully
+- `validateDescription()` rejects duplicate words
+- `validateAmount()` accepts valid decimals and rejects negatives
+- `validateDate()` rejects non-existent calendar dates (e.g. `2026-02-30`)
+- `validateCategory()` rejects values containing numbers
+- `validateForm()` passes with a complete, valid data object
+- `localStorage` save and load round-trip
+- `localStorage` clear leaves an empty array
+- All 20 records in `seed.json` conform to the transaction schema
 
 ---
 
-## Testing Approach
+## Getting Started
 
-The `tests.html` file provides a self-contained, browser-based test environment covering:
+No build step or install required.
 
-- Module import verification
-- Function export accessibility checks
-- Valid data acceptance tests
-- Invalid data rejection tests
-- Schema enforcement across all fields
+1. Clone or download the repository
+2. Open `index.html` in any modern browser
+3. To load sample data, go to **Settings → Import JSON** and select `seed.json`
+4. To run tests, open `tests.html` in the browser
 
-Both valid and intentionally invalid JSON samples are used in tandem to confirm the robustness of each validation layer.
-
----
-
-## Design Principles
-
-Pesaani was designed with the following principles in mind:
-
-- **Modularity** — Clear separation between data, validation logic, and presentation
-- **Readability** — Self-documenting validation rules with minimal abstraction overhead
-- **Correctness** — Validation fails loudly and explicitly on malformed input
-- **Portability** — Runs entirely in the browser with zero external dependencies
+> The app uses ES Modules (`type="module"`), so it must be served over HTTP rather than opened as a `file://` URL. Use a local server such as VS Code Live Server, `npx serve`, or `python -m http.server`.
 
 ---
 
 ## Limitations
 
-- Client-side validation only — no server-side processing
-- No persistence or database layer
-- No authentication or authorisation mechanisms
-- Not optimised for large-scale or streaming datasets
+- Client-side only — no backend, no authentication
+- Data is tied to the browser and device (`localStorage`)
+- Not optimised for very large transaction volumes
+- Currency conversion rates are manually configured — not live
 
 ---
 
-## Conclusion
+## Base Currency
 
-Pesaani demonstrates disciplined schema validation through modern JavaScript module architecture. By combining structural, type-level, regex-based, and referential integrity checks, the system provides a robust, layered approach to financial data validation — built entirely from first principles using vanilla web technologies.
+All amounts are stored and displayed in **RWF (Rwandan Francs)**. Exchange rates for USD and GBP can be updated in Settings and are saved to `localStorage`.
 
 ---
 
-*Developed by Raphael Mumo*
+_© 2025 PESAANI — Developed by Raphael Mumo_
