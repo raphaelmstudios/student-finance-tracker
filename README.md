@@ -5,7 +5,7 @@
 A responsive, accessible finance tracker built specifically for students. Track daily expenses, understand spending patterns, and build healthy financial habits without complexity or overwhelm.
 
 **Live Demo:** https://raphaelmstudios.github.io/student-finance-tracker
-
+**Demo Video:** https://youtu.be/Ep6Zx3LibQw
 **Developer:** Raphael Musau  
 **GitHub:** @raphaelmstudios  
 **Email:** r.musau@alustudent.com
