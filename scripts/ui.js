@@ -1,7 +1,7 @@
 // ui.js - Main controller that handles all user interface interactions
 
 // Import all the functions we need from other files
-import { save, clear } from "./storage.js";
+import { save, clear, clearAll } from "./storage.js";
 import {
   init,
   getTransactions,
@@ -27,33 +27,83 @@ let editingId = null;
 document.addEventListener("DOMContentLoaded", () => {
   init();
   setupNavigation();
+  setupHamburger();
   setupForm();
   setupSearch();
   setupSort();
   setupSettings();
   setupBudgetCap();
+  populateRateInputs();
   renderTable();
   updateStats();
+  renderChart();
 });
 
 /*Make navigation links work - clicking them shows/hides sections*/
 
 function setupNavigation() {
-  // Get all navigation links
-  const navLinks = document.querySelectorAll(".nav-link");
+  const links = document.querySelectorAll("#main-nav .nav-link");
 
-  navLinks.forEach((link) => {
-    link.addEventListener("click", (e) => {
-      e.preventDefault(); // Stop the page from jumping
+  links.forEach((link) => {
+    link.addEventListener("click", function (e) {
+      e.preventDefault();
 
-      // Get which section to show (e.g., "about", "dashboard")
-      const targetId = link.getAttribute("href").substring(1); // Remove the # symbol
+      const targetId = this.getAttribute("href").substring(1);
+      console.log("Clicked:", targetId);
+
       showSection(targetId);
+
+      // Close drawer immediately
+      closeHamburger();
     });
   });
 }
 
+/*Make hamburger menu work on mobile*/
+
 /*Show one section and hide all others*/
+function closeHamburger() {
+  const toggle = document.getElementById("nav-toggle");
+  const nav = document.getElementById("main-nav");
+  const backdrop = document.getElementById("nav-backdrop");
+
+  if (!nav.classList.contains("nav-open")) return;
+
+  nav.classList.remove("nav-open");
+  backdrop.classList.remove("visible");
+
+  toggle.setAttribute("aria-expanded", "false");
+  toggle.setAttribute("aria-label", "Open navigation menu");
+
+  document.body.style.overflow = "";
+}
+
+function setupHamburger() {
+  const toggle = document.getElementById("nav-toggle");
+  const nav = document.getElementById("main-nav");
+  const backdrop = document.getElementById("nav-backdrop");
+
+  toggle.addEventListener("click", () => {
+    const isOpen = toggle.getAttribute("aria-expanded") === "true";
+
+    if (isOpen) {
+      closeHamburger();
+    } else {
+      toggle.setAttribute("aria-expanded", "true");
+      toggle.setAttribute("aria-label", "Close navigation menu");
+      nav.classList.add("nav-open");
+      backdrop.classList.add("visible");
+      document.body.style.overflow = "hidden";
+    }
+  });
+
+  backdrop.addEventListener("click", closeHamburger);
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeHamburger();
+  });
+}
+
 function showSection(sectionId) {
   // Hide all sections
   document.querySelectorAll(".section").forEach((section) => {
@@ -66,13 +116,16 @@ function showSection(sectionId) {
     targetSection.classList.add("active");
   }
 
-  // Update navigation to show which link is active
+  // Update navigation active state
   document.querySelectorAll(".nav-link").forEach((link) => {
     link.classList.remove("active");
     if (link.getAttribute("href") === `#${sectionId}`) {
       link.classList.add("active");
     }
   });
+
+  // Scroll once (after everything updates)
+  window.scrollTo({ top: 0, behavior: "smooth" });
 
   // If showing records section, refresh the table
   if (sectionId === "records") {
@@ -113,10 +166,22 @@ function renderTable() {
     );
   }
 
-  // If no transactions, show empty message
+  // Update search hint count
+  const hint = document.getElementById("search-hint");
+  if (currentSearch) {
+    hint.textContent = `${filteredTransactions.length} result${filteredTransactions.length !== 1 ? "s" : ""} found`;
+  } else {
+    hint.textContent = "";
+  }
+
   if (filteredTransactions.length === 0) {
-    tbody.innerHTML =
-      '<tr><td colspan="5" class="empty-state">No transactions found.</td></tr>';
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="5" class="empty-state">
+          <span class="empty-state-icon" aria-hidden="true">📋</span>
+          ${currentSearch ? "No transactions match your search." : "No transactions yet. Add one to get started!"}
+        </td>
+      </tr>`;
     return;
   }
 
@@ -137,16 +202,18 @@ function renderTable() {
 
       return `
       <tr>
-        <td>${transaction.date}</td>
+        <td class="col-date">${transaction.date}</td>
         <td>${description}</td>
-        <td>FRw ${formatNumber(transaction.amount)}</td>
-        <td>${category}</td>
+        <td class="col-amount">FRw ${formatNumber(transaction.amount)}</td>
+        <td><span class="category-badge cat-${transaction.category.toLowerCase().replace(/\s+/g, "-")}">${category}</span></td>
         <td>
-          <button class="action-btn btn-edit" data-id="${transaction.id}">Edit</button>
-          <button class="action-btn btn-delete" data-id="${transaction.id}">Delete</button>
+          <button class="action-btn btn-edit" data-id="${transaction.id}"
+            aria-label="Edit ${transaction.description}">Edit</button>
+          <button class="action-btn btn-delete" data-id="${transaction.id}"
+            aria-label="Delete ${transaction.description}">Delete</button>
         </td>
       </tr>
-    `;
+      `;
     })
     .join("");
 
@@ -196,19 +263,27 @@ function setupSort() {
 /*Sort transactions by a field*/
 
 function sortTransactions(transactions, field, order) {
-  const sorted = [...transactions]; // Make a copy so we don't modify original
+  const sorted = [...transactions];
 
   sorted.sort((a, b) => {
     let valueA = a[field];
     let valueB = b[field];
 
-    // For text fields, convert to lowercase for consistent sorting
+    if (field === "amount") {
+      valueA = Number(valueA);
+      valueB = Number(valueB);
+    }
+
+    if (field === "date") {
+      valueA = new Date(valueA);
+      valueB = new Date(valueB);
+    }
+
     if (field === "description" || field === "category") {
       valueA = valueA.toLowerCase();
       valueB = valueB.toLowerCase();
     }
 
-    // Compare values
     if (valueA < valueB) return order === "asc" ? -1 : 1;
     if (valueA > valueB) return order === "asc" ? 1 : -1;
     return 0;
@@ -223,13 +298,14 @@ function updateSortButtons() {
   document.querySelectorAll(".sort-btn").forEach((btn) => {
     const field = btn.dataset.field;
 
+    // Remove ANY existing arrow (↑ ↓ ↕)
+    btn.textContent = btn.textContent.replace(/\s[↑↓↕]$/, "");
+
     if (field === currentSort.field) {
-      // Show arrow indicating sort direction
       const arrow = currentSort.order === "asc" ? " ↑" : " ↓";
-      btn.textContent = btn.textContent.replace(/ [↑↓]$/, "") + arrow;
+      btn.textContent += arrow;
     } else {
-      // Show neutral sort indicator
-      btn.textContent = btn.textContent.replace(/ [↑↓]$/, "") + " ↕";
+      btn.textContent += " ↕";
     }
   });
 }
@@ -328,6 +404,7 @@ function handleFormSubmit() {
   showSection("records");
   renderTable();
   updateStats();
+  renderChart();
 }
 
 /*Clear all error messages from the form*/
@@ -371,15 +448,10 @@ function generateId() {
 
 /*Handle editing a transaction*/
 function handleEdit(id) {
-  // Find the transaction with this ID
   const transactions = getTransactions();
   const transaction = transactions.find((t) => t.id === id);
 
-  // If not found, show error and stop
-  if (!transaction) {
-    alert("Transaction not found");
-    return;
-  }
+  if (!transaction) return;
 
   // Fill the form with the transaction's data
   document.getElementById("form-id").value = transaction.id;
@@ -401,34 +473,24 @@ function handleEdit(id) {
 
 /*Handle deleting a transaction*/
 function handleDelete(id) {
-  // Find the transaction to show its details in confirmation
   const transactions = getTransactions();
   const transaction = transactions.find((t) => t.id === id);
 
-  if (!transaction) {
-    alert("Transaction not found");
-    return;
-  }
+  if (!transaction) return; // Silent fail — button shouldn't exist without a transaction
 
-  // Ask user to confirm deletion
-  const confirmMessage =
-    `Are you sure you want to delete this transaction?\n\n` +
-    `Description: ${transaction.description}\n` +
-    `Amount: FRw ${formatNumber(transaction.amount)}\n` +
-    `Date: ${transaction.date}`;
+  const proceed = window.confirm(
+    `Delete "${transaction.description}" (FRw ${formatNumber(transaction.amount)}) on ${transaction.date}?`,
+  );
 
-  if (confirm(confirmMessage)) {
-    // User clicked OK - delete it
+  if (proceed) {
     deleteTransaction(id);
     renderTable();
     updateStats();
+    renderChart();
   }
-  // If user clicked Cancel, do nothing
 }
 
-/**
- * Calculate and display all dashboard statistics
- */
+/*Calculate and display all dashboard statistics*/
 function updateStats() {
   const transactions = getTransactions();
 
@@ -450,7 +512,6 @@ function updateStats() {
   document.getElementById("stat-week").textContent =
     `FRw ${formatNumber(last7Days)}`;
 
-  // Update budget cap status if one is set
   updateBudgetStatus(totalSpending);
 }
 
@@ -502,108 +563,101 @@ function getLast7DaysSpending(transactions) {
   return recentTotal;
 }
 
-/*Update budget cap status message*/
+// Update budget cap status if one is set
 function updateBudgetStatus(totalSpending) {
   const cap = getBudgetCap();
   const statusDiv = document.getElementById("cap-status");
 
-  // If no cap is set, clear the message
   if (!cap) {
     statusDiv.textContent = "";
-    statusDiv.style.backgroundColor = "";
-    statusDiv.style.color = "";
+    statusDiv.className = "";
     return;
   }
 
   const remaining = cap - totalSpending;
 
-  // If under budget
   if (remaining >= 0) {
-    statusDiv.textContent = `You have FRw ${formatNumber(remaining)} remaining in your budget.`;
-    statusDiv.style.backgroundColor = "#d1fae5"; // Light green
-    statusDiv.style.color = "#065f46"; // Dark green text
+    statusDiv.textContent = `✓ FRw ${formatNumber(remaining)} remaining of your FRw ${formatNumber(cap)} budget.`;
+    statusDiv.className = "under";
     statusDiv.setAttribute("aria-live", "polite");
-  }
-  // If over budget
-  else {
+  } else {
     const overage = Math.abs(remaining);
-    statusDiv.textContent = `⚠️ You are FRw ${formatNumber(overage)} over your budget!`;
-    statusDiv.style.backgroundColor = "#fee2e2"; // Light red
-    statusDiv.style.color = "#991b1b"; // Dark red text
+    statusDiv.textContent = `⚠️ You are FRw ${formatNumber(overage)} over your FRw ${formatNumber(cap)} budget!`;
+    statusDiv.className = "over";
     statusDiv.setAttribute("aria-live", "assertive");
   }
 }
-
 /*Make the budget cap feature work*/
 function setupBudgetCap() {
   const capInput = document.getElementById("cap-input");
   const capBtn = document.getElementById("cap-btn");
+  const statusDiv = document.getElementById("cap-status");
 
-  // When user clicks "Set Cap" button
+  // Pre-populate input if a cap was previously saved
+  const savedCap = getBudgetCap();
+  if (savedCap) capInput.value = savedCap;
+
   capBtn.addEventListener("click", () => {
     const value = capInput.value.trim();
 
-    // If they typed nothing, clear the cap
     if (!value) {
       setBudgetCap(null);
-      document.getElementById("cap-status").textContent = "Budget cap removed.";
+      statusDiv.textContent = "Budget cap removed.";
+      statusDiv.className = "";
       setTimeout(() => {
-        document.getElementById("cap-status").textContent = "";
-      }, 3000); // Clear message after 3 seconds
+        statusDiv.textContent = "";
+      }, 3000);
       return;
     }
 
-    // Convert to number
     const cap = parseFloat(value);
 
-    // Validate it's a positive number
     if (isNaN(cap) || cap <= 0) {
-      document.getElementById("cap-status").textContent =
-        "Please enter a valid amount greater than 0.";
-      document.getElementById("cap-status").style.backgroundColor = "#fee2e2";
-      document.getElementById("cap-status").style.color = "#991b1b";
+      statusDiv.textContent = "Please enter a valid amount greater than 0.";
+      statusDiv.className = "over";
       return;
     }
 
-    // Save the cap
     setBudgetCap(cap);
-
-    // Show success message
-    document.getElementById("cap-status").textContent =
-      `Budget cap set to FRw ${formatNumber(cap)}.`;
-    document.getElementById("cap-status").style.backgroundColor = "#dbeafe";
-    document.getElementById("cap-status").style.color = "#1e40af";
-
-    // Update stats to show budget status
     updateStats();
   });
 }
 
 /*Make import/export features work*/
+function showNotice(id, message, isError = false) {
+  const el = document.getElementById(id);
+  el.textContent = message;
+  el.style.background = isError ? "rgba(185,28,28,.09)" : "rgba(45,74,62,.09)";
+  el.style.color = isError ? "var(--red)" : "var(--forest)";
+  el.style.borderColor = isError ? "rgba(185,28,28,.2)" : "rgba(45,74,62,.2)";
+  el.classList.add("visible");
+  setTimeout(() => {
+    el.classList.remove("visible");
+    el.textContent = "";
+  }, 3500);
+}
+
 function setupSettings() {
   const exportBtn = document.getElementById("export-btn");
   const importFile = document.getElementById("import-file");
   const clearBtn = document.getElementById("clear-all");
   const saveRatesBtn = document.getElementById("save-rates");
 
-  // Export button - download transactions as JSON
+  // Export button
   exportBtn.addEventListener("click", () => {
     const transactions = getTransactions();
-    const dataStr = JSON.stringify(transactions, null, 2); // Pretty format with 2-space indent
+    const dataStr = JSON.stringify(transactions, null, 2);
     const dataBlob = new Blob([dataStr], { type: "application/json" });
-
-    // Create download link
     const url = URL.createObjectURL(dataBlob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = `finance-tracker-${new Date().toISOString().split("T")[0]}.json`;
+    link.download = `pesaani-export-${new Date().toISOString().split("T")[0]}.json`;
     link.click();
-
-    // Clean up
     URL.revokeObjectURL(url);
+    showNotice("data-notice", "✓ Export downloaded successfully.");
   });
 
-  //Import file - load transactions from JSON
+  // Import file
   importFile.addEventListener("change", (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -614,13 +668,15 @@ function setupSettings() {
       try {
         const data = JSON.parse(event.target.result);
 
-        // Validate it's an array
         if (!Array.isArray(data)) {
-          alert("Invalid file format. Expected an array of transactions.");
+          showNotice(
+            "data-notice",
+            "✗ Invalid file. Expected an array of transactions.",
+            true,
+          );
           return;
         }
 
-        // Validate each transaction has required fields
         const isValid = data.every(
           (t) =>
             t.id &&
@@ -631,67 +687,62 @@ function setupSettings() {
         );
 
         if (!isValid) {
-          alert("Invalid transaction data. Please check the file format.");
+          showNotice(
+            "data-notice",
+            "✗ Invalid transaction data. Check the file format.",
+            true,
+          );
           return;
         }
 
-        // Ask for confirmation
-        if (
-          confirm(
-            `Import ${data.length} transactions? This will replace your current data.`,
-          )
-        ) {
-          // Clear existing data first
-          clear();
+        // Simple inline confirmation using the notice area
+        const proceed = window.confirm(
+          `Import ${data.length} transactions? This will replace your current data.`,
+        );
 
-          // Format transactions properly
+        if (proceed) {
+          clear();
           const transactions = data.map((t) => ({
             ...t,
-            amount: parseFloat(t.amount), // Ensure amount is a number
+            amount: parseFloat(t.amount),
           }));
-
-          // Save all at once (more efficient!)
           save(transactions);
-
-          // Reload state and refresh UI
           init();
           renderTable();
           updateStats();
-
-          alert("Import successful!");
+          renderChart();
+          showNotice(
+            "data-notice",
+            `✓ Imported ${data.length} transactions successfully.`,
+          );
           showSection("records");
         }
       } catch (error) {
-        alert("Error reading file. Please make sure it's a valid JSON file.");
+        showNotice(
+          "data-notice",
+          "✗ Error reading file. Make sure it's valid JSON.",
+          true,
+        );
         console.error("Import error:", error);
       }
     };
 
     reader.readAsText(file);
-
-    // Reset file input so same file can be selected again
     e.target.value = "";
   });
 
-  // Clear all data button
+  // Clear all data
   clearBtn.addEventListener("click", () => {
-    if (
-      confirm(
-        "Are you sure you want to delete ALL transactions? This cannot be undone!",
-      )
-    ) {
-      // Ask again to be really sure
-      if (
-        confirm(
-          "This will permanently delete everything. Are you absolutely sure?",
-        )
-      ) {
-        clear(); // ← Direct call, no import needed!
-        init(); // Reload (will be empty)
-        renderTable();
-        updateStats();
-        alert("All data has been cleared.");
-      }
+    const proceed = window.confirm(
+      "Delete ALL transactions and settings? This cannot be undone.",
+    );
+    if (proceed) {
+      clearAll();
+      init();
+      renderTable();
+      updateStats();
+      renderChart();
+      showNotice("data-notice", "✓ All data has been cleared.");
     }
   });
 
@@ -701,11 +752,77 @@ function setupSettings() {
     const gbpRate = parseFloat(document.getElementById("rate-gbp").value);
 
     if (isNaN(usdRate) || isNaN(gbpRate) || usdRate <= 0 || gbpRate <= 0) {
-      alert("Please enter valid exchange rates.");
+      showNotice(
+        "rates-notice",
+        "✗ Please enter valid rates greater than 0.",
+        true,
+      );
       return;
     }
 
     setRates({ usd: usdRate, gbp: gbpRate });
-    alert("Exchange rates saved!");
+    showNotice("rates-notice", "✓ Exchange rates saved successfully.");
   });
+}
+
+/* Pre-fill rate inputs from saved state */
+function populateRateInputs() {
+  const rates = getRates();
+  document.getElementById("rate-usd").value = rates.usd;
+  document.getElementById("rate-gbp").value = rates.gbp;
+}
+
+/* Build the 7-day spending bar chart */
+function renderChart() {
+  const chartBars = document.getElementById("chart-bars");
+  const chartSr = document.getElementById("chart-sr");
+  if (!chartBars) return;
+
+  const transactions = getTransactions();
+
+  // Build array of last 7 days oldest → newest
+  const days = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    const dateStr = d.toISOString().split("T")[0];
+    const label = d.toLocaleDateString("en-US", { weekday: "short" });
+    const total = transactions
+      .filter((t) => t.date === dateStr)
+      .reduce((sum, t) => sum + t.amount, 0);
+    days.push({ dateStr, label, total, isToday: i === 0 });
+  }
+
+  // Find max for scaling bar heights
+  const max = Math.max(...days.map((d) => d.total), 1);
+
+  // Build chart HTML
+  chartBars.innerHTML = days
+    .map((day) => {
+      const heightPct = Math.round((day.total / max) * 100);
+      const barClass = day.isToday ? "chart-bar is-today" : "chart-bar";
+      const labelClass = day.isToday ? "chart-label is-today" : "chart-label";
+      const amountLabel =
+        day.total > 0 ? `FRw ${formatNumber(day.total)}` : "—";
+
+      return `
+        <div class="chart-col">
+          <div class="${barClass}"
+            style="height: ${heightPct}%"
+            data-amount="${amountLabel}"
+            aria-hidden="true">
+          </div>
+          <span class="${labelClass}">${day.label}</span>
+        </div>`;
+    })
+    .join("");
+
+  // Screen reader summary
+  const srText = days
+    .map(
+      (d) =>
+        `${d.label}: ${d.total > 0 ? "FRw " + formatNumber(d.total) : "nothing"}`,
+    )
+    .join(", ");
+  chartSr.textContent = `7-day spending: ${srText}`;
 }

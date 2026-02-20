@@ -1,110 +1,182 @@
 [
   {
-    "id": "txn_1708354200001",
-    "description": "Lunch at campus cafeteria",
-    "amount": 5000,
-    "category": "Food",
-    "date": "2025-02-10",
-    "createdAt": "2025-02-10T12:30:00.000Z",
-    "updatedAt": "2025-02-10T12:30:00.000Z"
-  },
-  {
-    "id": "txn_1708354200002",
-    "description": "Chemistry textbook",
-    "amount": 45000,
-    "category": "Books",
-    "date": "2025-02-08",
-    "createdAt": "2025-02-08T09:15:00.000Z",
-    "updatedAt": "2025-02-08T09:15:00.000Z"
-  },
-  {
-    "id": "txn_1708354200003",
-    "description": "Monthly bus pass",
-    "amount": 15000,
-    "category": "Transport",
-    "date": "2025-02-01",
-    "createdAt": "2025-02-01T08:00:00.000Z",
-    "updatedAt": "2025-02-01T08:00:00.000Z"
-  },
-  {
-    "id": "txn_1708354200004",
-    "description": "Coffee with study group",
+    "id": "txn_1700000001",
+    "description": "Cafeteria lunch",
     "amount": 3500,
     "category": "Food",
-    "date": "2025-02-15",
-    "createdAt": "2025-02-15T14:20:00.000Z",
-    "updatedAt": "2025-02-15T14:20:00.000Z"
+    "date": "2026-02-01",
+    "createdAt": "2026-02-01T12:00:00.000Z",
+    "updatedAt": "2026-02-01T12:00:00.000Z"
   },
   {
-    "id": "txn_1708354200005",
-    "description": "Movie tickets",
-    "amount": 8000,
-    "category": "Entertainment",
-    "date": "2025-02-12",
-    "createdAt": "2025-02-12T19:00:00.000Z",
-    "updatedAt": "2025-02-12T19:00:00.000Z"
-  },
-  {
-    "id": "txn_1708354200006",
-    "description": "Dinner at restaurant",
-    "amount": 12000,
-    "category": "Food",
-    "date": "2025-02-14",
-    "createdAt": "2025-02-14T20:30:00.000Z",
-    "updatedAt": "2025-02-14T20:30:00.000Z"
-  },
-  {
-    "id": "txn_1708354200007",
-    "description": "Notebook and pens",
-    "amount": 4500,
+    "id": "txn_1700000002",
+    "description": "Introduction to Economics textbook",
+    "amount": 28000,
     "category": "Books",
-    "date": "2025-02-05",
-    "createdAt": "2025-02-05T10:00:00.000Z",
-    "updatedAt": "2025-02-05T10:00:00.000Z"
+    "date": "2026-02-02",
+    "createdAt": "2026-02-02T09:00:00.000Z",
+    "updatedAt": "2026-02-02T09:00:00.000Z"
   },
   {
-    "id": "txn_1708354200008",
+    "id": "txn_1700000003",
     "description": "Moto taxi to campus",
-    "amount": 2000,
+    "amount": 1000,
     "category": "Transport",
-    "date": "2025-02-16",
-    "createdAt": "2025-02-16T07:45:00.000Z",
-    "updatedAt": "2025-02-16T07:45:00.000Z"
+    "date": "2026-02-03",
+    "createdAt": "2026-02-03T08:00:00.000Z",
+    "updatedAt": "2026-02-03T08:00:00.000Z"
   },
   {
-    "id": "txn_1708354200009",
-    "description": "Registration fees",
-    "amount": 250000,
+    "id": "txn_1700000004",
+    "description": "Semester registration fees",
+    "amount": 150000,
     "category": "Fees",
-    "date": "2025-02-03",
-    "createdAt": "2025-02-03T11:00:00.000Z",
-    "updatedAt": "2025-02-03T11:00:00.000Z"
+    "date": "2026-02-04",
+    "createdAt": "2026-02-04T10:00:00.000Z",
+    "updatedAt": "2026-02-04T10:00:00.000Z"
   },
   {
-    "id": "txn_1708354200010",
-    "description": "Snacks and drinks",
-    "amount": 6000,
+    "id": "txn_1700000005",
+    "description": "Pizza with friends after exams",
+    "amount": 8500,
     "category": "Food",
-    "date": "2025-02-17",
-    "createdAt": "2025-02-17T15:30:00.000Z",
-    "updatedAt": "2025-02-17T15:30:00.000Z"
+    "date": "2026-02-05",
+    "createdAt": "2026-02-05T19:00:00.000Z",
+    "updatedAt": "2026-02-05T19:00:00.000Z"
   },
   {
-    "id": "txn_1708354200011",
-    "description": "Phone credit top-up",
+    "id": "txn_1700000006",
+    "description": "Netflix monthly subscription",
     "amount": 5000,
-    "category": "Other",
-    "date": "2025-02-11",
-    "createdAt": "2025-02-11T16:00:00.000Z",
-    "updatedAt": "2025-02-11T16:00:00.000Z"
+    "category": "Entertainment",
+    "date": "2026-02-06",
+    "createdAt": "2026-02-06T11:00:00.000Z",
+    "updatedAt": "2026-02-06T11:00:00.000Z"
   },
   {
-    "id": "txn_1708354200012",
-    "description": "Breakfast at cafe",
-    "amount": 3000,
+    "id": "txn_1700000007",
+    "description": "Bus fare home for weekend",
+    "amount": 2500,
+    "category": "Transport",
+    "date": "2026-02-07",
+    "createdAt": "2026-02-07T16:00:00.000Z",
+    "updatedAt": "2026-02-07T16:00:00.000Z"
+  },
+  {
+    "id": "txn_1700000008",
+    "description": "Printing and binding assignment",
+    "amount": 1500,
+    "category": "Other",
+    "date": "2026-02-08",
+    "createdAt": "2026-02-08T14:00:00.000Z",
+    "updatedAt": "2026-02-08T14:00:00.000Z"
+  },
+  {
+    "id": "txn_1700000009",
+    "description": "Breakfast at campus canteen",
+    "amount": 2000,
     "category": "Food",
-    "date": "2025-02-18",
-    "createdAt": "2025-02-18T08:30:00.000Z",
-    "updatedAt": "2025-02-18T08:30:00.000Z"
+    "date": "2026-02-09",
+    "createdAt": "2026-02-09T07:30:00.000Z",
+    "updatedAt": "2026-02-09T07:30:00.000Z"
+  },
+  {
+    "id": "txn_1700000010",
+    "description": "Calculus study guide",
+    "amount": 12000,
+    "category": "Books",
+    "date": "2026-02-10",
+    "createdAt": "2026-02-10T10:00:00.000Z",
+    "updatedAt": "2026-02-10T10:00:00.000Z"
+  },
+  {
+    "id": "txn_1700000011",
+    "description": "Cinema ticket for group outing",
+    "amount": 6000,
+    "category": "Entertainment",
+    "date": "2026-02-11",
+    "createdAt": "2026-02-11T18:00:00.000Z",
+    "updatedAt": "2026-02-11T18:00:00.000Z"
+  },
+  {
+    "id": "txn_1700000012",
+    "description": "Moto taxi to hospital appointment",
+    "amount": 1500,
+    "category": "Transport",
+    "date": "2026-02-12",
+    "createdAt": "2026-02-12T09:00:00.000Z",
+    "updatedAt": "2026-02-12T09:00:00.000Z"
+  },
+  {
+    "id": "txn_1700000013",
+    "description": "Laptop charger replacement",
+    "amount": 18000,
+    "category": "Other",
+    "date": "2026-02-13",
+    "createdAt": "2026-02-13T15:00:00.000Z",
+    "updatedAt": "2026-02-13T15:00:00.000Z"
+  },
+  {
+    "id": "txn_1700000014",
+    "description": "Dinner at Bourbon Coffee",
+    "amount": 11000,
+    "category": "Food",
+    "date": "2026-02-14",
+    "createdAt": "2026-02-14T20:00:00.000Z",
+    "updatedAt": "2026-02-14T20:00:00.000Z"
+  },
+  {
+    "id": "txn_1700000015",
+    "description": "Library late fee",
+    "amount": 500,
+    "category": "Fees",
+    "date": "2026-02-15",
+    "createdAt": "2026-02-15T11:00:00.000Z",
+    "updatedAt": "2026-02-15T11:00:00.000Z"
+  },
+  {
+    "id": "txn_1700000016",
+    "description": "Spotify premium subscription",
+    "amount": 3500,
+    "category": "Entertainment",
+    "date": "2026-02-16",
+    "createdAt": "2026-02-16T12:00:00.000Z",
+    "updatedAt": "2026-02-16T12:00:00.000Z"
+  },
+  {
+    "id": "txn_1700000017",
+    "description": "Groceries from Nakumatt",
+    "amount": 14500,
+    "category": "Food",
+    "date": "2026-02-17",
+    "createdAt": "2026-02-17T16:00:00.000Z",
+    "updatedAt": "2026-02-17T16:00:00.000Z"
+  },
+  {
+    "id": "txn_1700000018",
+    "description": "Data Science course notes photocopy",
+    "amount": 2500,
+    "category": "Books",
+    "date": "2026-02-18",
+    "createdAt": "2026-02-18T13:00:00.000Z",
+    "updatedAt": "2026-02-18T13:00:00.000Z"
+  },
+  {
+    "id": "txn_1700000019",
+    "description": "Uber ride to airport to receive family",
+    "amount": 9000,
+    "category": "Transport",
+    "date": "2026-02-19",
+    "createdAt": "2026-02-19T14:00:00.000Z",
+    "updatedAt": "2026-02-19T14:00:00.000Z"
+  },
+  {
+    "id": "txn_1700000020",
+    "description": "Haircut at campus barbershop",
+    "amount": 3000,
+    "category": "Other",
+    "date": "2026-02-20",
+    "createdAt": "2026-02-20T10:00:00.000Z",
+    "updatedAt": "2026-02-20T10:00:00.000Z"
   }
 ]

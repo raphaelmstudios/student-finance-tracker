@@ -1,7 +1,6 @@
 // state.js - Manages the app's in-memory state
 
-import { load, save } from "./storage.js";
-
+import { load, save, loadSettings, saveSettings } from "./storage.js";
 // Current transactions in memory
 let transactions = [];
 
@@ -16,6 +15,21 @@ let budgetCap = null;
 
 export function init() {
   transactions = load();
+  const settings = loadSettings();
+  if (settings) {
+    if (settings.rates) rates = settings.rates;
+    if (settings.budgetCap !== undefined) budgetCap = settings.budgetCap;
+  }
+}
+
+export function setRates(newRates) {
+  rates = { ...rates, ...newRates };
+  saveSettings({ rates, budgetCap });
+}
+
+export function setBudgetCap(amount) {
+  budgetCap = amount;
+  saveSettings({ rates, budgetCap });
 }
 
 export function getTransactions() {
@@ -44,14 +58,6 @@ export function getRates() {
   return rates;
 }
 
-export function setRates(newRates) {
-  rates = { ...rates, ...newRates };
-}
-
 export function getBudgetCap() {
   return budgetCap;
-}
-
-export function setBudgetCap(amount) {
-  budgetCap = amount;
 }

@@ -3,57 +3,114 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Student Finance Tracker</title>
+    <title>PESAANI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="styles/main.css" />
+    <link rel="icon" type="image/png" href="assets/Untitled design/5.png" />
   </head>
   <body>
     <a href="#main" class="skip-link">Skip to main content</a>
+    <div class="nav-backdrop" id="nav-backdrop" aria-hidden="true"></div>
     <!-- HEADER: Title + Navigation -->
-    <header>
-      <h1>💰 Student Finance Tracker</h1>
-      <nav aria-label="Main navigation">
-        <ul>
-          <li><a href="#about" class="nav-link">About</a></li>
-          <li><a href="#dashboard" class="nav-link">Dashboard</a></li>
-          <li><a href="#records" class="nav-link">Records</a></li>
-          <li><a href="#add-edit" class="nav-link">Add/Edit</a></li>
-          <li><a href="#settings" class="nav-link">Settings</a></li>
-        </ul>
-      </nav>
-    </header>
+    <header role="banner">
+      <div class="header-inner">
+        <div class="header-brand">
+          <a href="#about" class="brand-link">
+            <img
+              src="assets/Untitled design/4.png"
+              alt="PESAANI"
+              class="header-logo"
+            />
+          </a>
+          <p class="app-tagline">Your Money • Your Clarity</p>
+        </div>
 
+        <button
+          class="nav-toggle"
+          id="nav-toggle"
+          type="button"
+          aria-controls="main-nav"
+          aria-expanded="false"
+          aria-label="Open navigation menu"
+        >
+          <span class="bar"></span>
+          <span class="bar"></span>
+          <span class="bar"></span>
+        </button>
+
+        <nav aria-label="Main navigation" id="main-nav">
+          <ul role="list">
+            <li><a href="#about" class="nav-link active">About</a></li>
+            <li><a href="#dashboard" class="nav-link">Dashboard</a></li>
+            <li><a href="#records" class="nav-link">Records</a></li>
+            <li><a href="#add-edit" class="nav-link">Transactions</a></li>
+            <li><a href="#settings" class="nav-link">Settings</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
     <!-- MAIN CONTENT: All sections live here -->
     <main id="main">
-      <!-- SECTION 1: About / Welcome -->
+      <!-- SECTION 1: ABOUT SECTION -->
       <section
         id="about"
         class="section active"
         aria-labelledby="about-heading"
       >
-        <h2>About This App</h2>
+        <h2 id="about-heading">About PESAANI</h2>
+
         <p>
-          Track your student expenses, categorize spending, and visualize where
-          your money goes.
+          <strong>PESAANI</strong> is a simple, accessible finance tracker built
+          specifically for students. It helps you record daily expenses,
+          understand where your money goes, and develop healthier financial
+          habits without complexity or overwhelm.
+        </p>
+
+        <h3>Why PESAANI Exists</h3>
+        <p>
+          Many students manage money informally through memory, notes, or
+          guesswork. PESAANI was created to provide clarity, structure, and
+          visibility over everyday spending, using a design that prioritizes
+          accessibility, simplicity, and ease of use.
         </p>
 
         <h3>Features</h3>
         <ul>
-          <li>Add, edit, and delete transactions</li>
-          <li>Sort and search through your spending history</li>
-          <li>View spending statistics and trends</li>
-          <li>Set budget caps and get alerts</li>
+          <li>Record daily expenses with clear categories and dates</li>
+          <li>Edit and manage transactions in one place</li>
+          <li>Search and sort spending history using powerful filters</li>
+          <li>View key insights such as total spending and top categories</li>
+          <li>Set monthly budget caps and receive clear alerts</li>
         </ul>
 
-        <h3>Contact</h3>
+        <h3>Who It's For</h3>
         <p>
-          GitHub:
-          <a href="https://github.com/raphaelmstudios" target="_blank"
-            >raphaelmstudios</a
-          >
+          PESAANI is designed for university students and young adults who want
+          to build financial awareness early, without using complex or
+          professional finance tools.
         </p>
-        <p>Email: r.musau@alustudent.com</p>
-      </section>
 
+        <h3>Contact</h3>
+        <div class="contact-card">
+          <p><strong>Developer:</strong> Raphael Musau</p>
+          <p>
+            <strong>GitHub:</strong>
+            <a
+              href="https://github.com/raphaelmstudios"
+              target="_blank"
+              rel="noopener"
+            >
+              raphaelmstudios
+            </a>
+          </p>
+          <p><strong>Email:</strong> r.musau@alustudent.com</p>
+        </div>
+      </section>
       <!-- SECTION 2: Dashboard / Stats -->
       <section
         id="dashboard"
@@ -82,19 +139,38 @@
           </div>
         </div>
 
+        <!-- 7-Day Chart -->
+        <div
+          class="chart-container"
+          role="region"
+          aria-label="7-day spending trend chart"
+        >
+          <h3>7-Day Spending Trend</h3>
+          <div class="chart-bars" id="chart-bars" aria-hidden="true"></div>
+          <p class="sr-only" id="chart-sr" aria-live="polite"></p>
+        </div>
+
         <!-- Budget Cap: Set spending limit -->
         <div class="budget-cap">
           <h3>Monthly Budget Cap</h3>
-          <label for="cap-input">Set Cap ($):</label>
-          <input
-            type="number"
-            id="cap-input"
-            min="0"
-            step="100"
-            placeholder="e.g., 500"
-          />
-          <button id="cap-btn">Set Cap</button>
-          <div id="cap-status" role="status"></div>
+          <div class="budget-cap-row">
+            <label for="cap-input">Set Cap (FRw):</label>
+            <input
+              type="number"
+              id="cap-input"
+              min="0"
+              step="1000"
+              placeholder="e.g. 500000"
+              aria-describedby="cap-status"
+            />
+            <button id="cap-btn" type="button">Set Cap</button>
+          </div>
+          <div
+            id="cap-status"
+            role="status"
+            aria-live="polite"
+            aria-atomic="true"
+          ></div>
         </div>
       </section>
 
@@ -102,110 +178,184 @@
       <section id="records" class="section" aria-labelledby="records-heading">
         <h2 id="records-heading">All Transactions</h2>
 
-        <!-- Search Controls: Regex search + case toggle -->
-        <div class="controls">
+        <!-- Search Controls -->
+        <div class="controls" role="search">
           <label for="search-input">Search (Regex):</label>
-          <input type="text" id="search-input" placeholder="e.g., coffee" />
+          <input
+            type="text"
+            id="search-input"
+            placeholder="e.g. coffee | ^\d+ | (food|books)"
+          />
           <label>
             <input type="checkbox" id="search-case" /> Case sensitive
           </label>
+          <span
+            id="search-hint"
+            class="search-status"
+            aria-live="polite"
+            role="status"
+          ></span>
         </div>
 
-        <!-- Table: All transactions displayed here -->
-        <table id="records-table">
-          <thead>
-            <tr>
-              <th>
-                <button class="sort-btn" data-field="date">Date ↕</button>
-              </th>
-              <th>
-                <button class="sort-btn" data-field="description">
-                  Description ↕
-                </button>
-              </th>
-              <th>
-                <button class="sort-btn" data-field="amount">Amount ↕</button>
-              </th>
-              <th>Category</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody id="records-body">
-            <tr>
-              <td colspan="5">No transactions yet. Add one to get started!</td>
-            </tr>
-          </tbody>
-        </table>
+        <!-- Table -->
+        <div class="table-wrapper">
+          <table id="records-table" aria-label="Transaction records">
+            <thead>
+              <tr>
+                <th scope="col">
+                  <button
+                    class="sort-btn"
+                    data-field="date"
+                    aria-label="Sort by date"
+                  >
+                    Date ↕
+                  </button>
+                </th>
+                <th scope="col">
+                  <button
+                    class="sort-btn"
+                    data-field="description"
+                    aria-label="Sort by description"
+                  >
+                    Description ↕
+                  </button>
+                </th>
+                <th scope="col">
+                  <button
+                    class="sort-btn"
+                    data-field="amount"
+                    aria-label="Sort by amount"
+                  >
+                    Amount ↕
+                  </button>
+                </th>
+                <th scope="col">Category</th>
+                <th scope="col">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="records-body">
+              <tr>
+                <td colspan="5" class="empty-state">
+                  <span class="empty-state-icon" aria-hidden="true">📋</span>
+                  No transactions yet. Add one to get started!
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </section>
 
       <!-- SECTION 4: Add/Edit Form -->
       <section id="add-edit" class="section" aria-labelledby="form-heading">
         <h2 id="form-heading">Add Transaction</h2>
 
-        <form id="transaction-form">
-          <input type="hidden" id="form-id" />
+        <div class="form-card">
+          <form id="transaction-form" novalidate>
+            <input type="hidden" id="form-id" />
 
-          <!-- Input: Description -->
-          <div class="form-group">
-            <label for="form-description">Description *</label>
-            <input type="text" id="form-description" required />
-            <span class="error" id="error-description" role="alert"></span>
-          </div>
+            <!-- Input: Description -->
+            <div class="form-group">
+              <label for="form-description">Description *</label>
+              <input
+                type="text"
+                id="form-description"
+                autocomplete="off"
+                aria-describedby="error-description"
+                aria-required="true"
+              />
+              <span
+                class="error"
+                id="error-description"
+                role="alert"
+                aria-live="assertive"
+              ></span>
+            </div>
 
-          <!-- Input: Amount -->
-          <div class="form-group">
-            <label for="form-amount">Amount (RWF) *</label>
-            <input type="text" id="form-amount" required />
-            <span class="error" id="error-amount" role="alert"></span>
-          </div>
+            <!-- Input: Amount -->
+            <div class="form-group">
+              <label for="form-amount">Amount (FRw) *</label>
+              <input
+                type="text"
+                id="form-amount"
+                inputmode="decimal"
+                placeholder="e.g. 12500"
+                aria-describedby="error-amount"
+                aria-required="true"
+              />
+              <span
+                class="error"
+                id="error-amount"
+                role="alert"
+                aria-live="assertive"
+              ></span>
+            </div>
 
-          <!-- Input: Category dropdown -->
-          <div class="form-group">
-            <label for="form-category">Category *</label>
-            <select id="form-category" required>
-              <option value="">-- Select --</option>
-              <option value="Food">Food</option>
-              <option value="Books">Books</option>
-              <option value="Transport">Transport</option>
-              <option value="Entertainment">Entertainment</option>
-              <option value="Fees">Fees</option>
-              <option value="Other">Other</option>
-            </select>
-            <span class="error" id="error-category" role="alert"></span>
-          </div>
+            <!-- Input: Category -->
+            <div class="form-group">
+              <label for="form-category">Category *</label>
+              <select
+                id="form-category"
+                aria-describedby="error-category"
+                aria-required="true"
+              >
+                <option value="">— Select a category —</option>
+                <option value="Food">Food</option>
+                <option value="Books">Books</option>
+                <option value="Transport">Transport</option>
+                <option value="Entertainment">Entertainment</option>
+                <option value="Fees">Fees</option>
+                <option value="Other">Other</option>
+              </select>
+              <span
+                class="error"
+                id="error-category"
+                role="alert"
+                aria-live="assertive"
+              ></span>
+            </div>
 
-          <!-- Input: Date (YYYY-MM-DD format) -->
-          <div class="form-group">
-            <label for="form-date">Date *</label>
-            <input
-              type="text"
-              id="form-date"
-              placeholder="YYYY-MM-DD"
-              required
-            />
-            <span class="error" id="error-date" role="alert"></span>
-          </div>
+            <!-- Input: Date -->
+            <div class="form-group">
+              <label for="form-date">Date * (YYYY-MM-DD)</label>
+              <input
+                type="text"
+                id="form-date"
+                placeholder="2025-09-29"
+                inputmode="numeric"
+                aria-describedby="error-date"
+                aria-required="true"
+              />
+              <span
+                class="error"
+                id="error-date"
+                role="alert"
+                aria-live="assertive"
+              ></span>
+            </div>
 
-          <!-- Form Actions: Submit or Cancel -->
-          <div class="form-actions">
-            <button type="submit" id="form-submit">Add Transaction</button>
-            <button type="button" id="form-cancel">Cancel</button>
-          </div>
-        </form>
+            <!-- Form Actions -->
+            <div class="form-actions">
+              <button type="submit" id="form-submit">Add Transaction</button>
+              <button type="button" id="form-cancel">Cancel</button>
+            </div>
+          </form>
+        </div>
       </section>
 
       <!-- SECTION 5: Settings -->
       <section id="settings" class="section" aria-labelledby="settings-heading">
         <h2 id="settings-heading">Settings</h2>
+        <p class="section-intro">
+          Customise PESAANI and manage your stored data.
+        </p>
 
-        <!-- Currency Conversion: Manual exchange rates -->
+        <!-- Currency Conversion -->
         <div class="settings-group">
           <h3>Currency Conversion</h3>
-          <p>Base currency: RWF (Rwandan Franc)</p>
-
+          <p>Base currency: <strong>RWF</strong> (Rwandan Franc)</p>
           <div class="currency-inputs">
             <div>
-              <label for="rate-usd">USD Rate:</label>
+              <label for="rate-usd">USD Rate (1 RWF = ? USD)</label>
               <input
                 type="number"
                 id="rate-usd"
@@ -213,10 +363,10 @@
                 value="0.000685"
                 min="0"
               />
-              <small>1 RWF = 0.000685 USD</small>
+              <small>Default: 1 RWF ≈ 0.000685 USD</small>
             </div>
             <div>
-              <label for="rate-gbp">GBP Rate:</label>
+              <label for="rate-gbp">GBP Rate (1 RWF = ? GBP)</label>
               <input
                 type="number"
                 id="rate-gbp"
@@ -224,36 +374,40 @@
                 value="0.000504"
                 min="0"
               />
-              <small>1 RWF = 0.000504 GBP</small>
+              <small>Default: 1 RWF ≈ 0.000504 GBP</small>
             </div>
           </div>
-          <button id="save-rates">Save Rates</button>
+          <button id="save-rates" type="button">Save Rates</button>
           <p class="help-text">
-            Note: 1 USD = 1,459.93 RWF | 1 GBP = 1,982.16 RWF
+            Reference: 1 USD ≈ 1,459 RWF &nbsp;|&nbsp; 1 GBP ≈ 1,982 RWF
           </p>
+          <p class="settings-notice" id="rates-notice" aria-live="polite"></p>
         </div>
 
-        <!-- Data Management: Import/Export/Clear -->
+        <!-- Data Management -->
         <div class="settings-group">
           <h3>Data Management</h3>
-          <button id="export-btn">Export JSON</button>
-          <div>
+          <button id="export-btn" type="button">Export JSON</button>
+          <div class="import-row">
             <label for="import-file">Import JSON:</label>
             <input type="file" id="import-file" accept=".json" />
           </div>
-          <button id="clear-all">Clear All Data</button>
+          <button id="clear-all" type="button">Clear All Data</button>
+          <p class="settings-notice" id="data-notice" aria-live="polite"></p>
         </div>
       </section>
     </main>
 
     <!-- FOOTER: Copyright and credits -->
-    <footer>
+    <footer role="contentinfo">
+      <p>&copy; 2025 PESAANI — A Student Finance Tracker</p>
+      <p>Built with accessible, responsive vanilla HTML, CSS, and JavaScript</p>
       <p>
-        &copy; 2025 Student Finance Tracker | Built with vanilla HTML, CSS, JS
-      </p>
-      <p>
-        by
-        <a href="https://github.com/raphaelmstudios" target="_blank"
+        Developed by
+        <a
+          href="https://github.com/raphaelmstudios"
+          target="_blank"
+          rel="noopener"
           >raphaelmstudios</a
         >
       </p>

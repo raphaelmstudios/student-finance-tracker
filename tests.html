@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Pesaani Automated Tests</title>
+    <style>
+      body {
+        font-family: Arial;
+        padding: 20px;
+      }
+      .pass {
+        color: green;
+      }
+      .fail {
+        color: red;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Pesaani Automated Tests</h1>
+    <ul id="results"></ul>
+
+    <script type="module">
+      import {
+        validateDescription,
+        validateAmount,
+        validateDate,
+        validateCategory,
+        validateForm,
+        compileRegex,
+      } from "./validators.js";
+
+      import { save, load, clear } from "./storage.js";
+
+      const results = document.getElementById("results");
+
+      function addResult(name, condition) {
+        const li = document.createElement("li");
+        li.textContent = name;
+        li.className = condition ? "pass" : "fail";
+        results.appendChild(li);
+      }
+
+      /*SAFE REGEX TEST*/
+
+      addResult(
+        "Safe regex compiler handles invalid pattern",
+        compileRegex("(") === null,
+      );
+
+      /*REGEX VALIDATION TESTS*/
+
+      addResult(
+        "Description rejects duplicate words",
+        !validateDescription("coffee coffee").valid,
+      );
+
+      addResult(
+        "Amount accepts valid decimal",
+        validateAmount("5000.50").valid,
+      );
+
+      addResult(
+        "Amount rejects negative values",
+        !validateAmount("-100").valid,
+      );
+
+      addResult(
+        "Date rejects invalid calendar date",
+        !validateDate("2026-02-30").valid,
+      );
+
+      addResult("Category rejects numbers", !validateCategory("Food123").valid);
+
+      /*FORM VALIDATION*/
+
+      addResult(
+        "Form validation passes with correct data",
+        validateForm({
+          description: "Library fee",
+          amount: "500",
+          date: "2026-02-10",
+          category: "Fees",
+        }).valid,
+      );
+
+      /*LOCAL STORAGE TESTS*/
+
+      clear();
+
+      save([{ id: "test1", amount: 100 }]);
+      const loaded = load();
+
+      addResult(
+        "localStorage save/load works",
+        loaded.length === 1 && loaded[0].id === "test1",
+      );
+
+      clear();
+
+      addResult("localStorage clear works", load().length === 0);
+
+      /*JSON SCHEMA VALIDATION*/
+
+      function validateRecordSchema(record) {
+        return (
+          typeof record.id === "string" &&
+          typeof record.description === "string" &&
+          typeof record.amount === "number" &&
+          typeof record.category === "string" &&
+          typeof record.date === "string" &&
+          typeof record.createdAt === "string" &&
+          typeof record.updatedAt === "string"
+        );
+      }
+
+      fetch("./seed.json")
+        .then((res) => res.json())
+        .then((data) => {
+          const allValid = data.every(validateRecordSchema);
+          addResult("Seed JSON schema valid", allValid);
+        })
+        .catch(() => {
+          addResult("Seed JSON loaded successfully", false);
+        });
+    </script>
+  </body>
+</html>
