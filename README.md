@@ -6,6 +6,7 @@ A responsive, accessible finance tracker built specifically for students. Track 
 
 **Live Demo:** https://raphaelmstudios.github.io/student-finance-tracker
 **Demo Video:** https://youtu.be/Ep6Zx3LibQw
+**Wireframe Model:** https://docs.google.com/document/d/1R-EW7uhBhGAgTDEanWvlfjZtPX3LEWsMohbhAw0UAbA/edit?usp=drivesdk
 **Developer:** Raphael Musau  
 **GitHub:** @raphaelmstudios  
 **Email:** r.musau@alustudent.com
